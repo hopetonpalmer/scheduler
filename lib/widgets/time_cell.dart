@@ -38,7 +38,7 @@ class TimeCell extends StatelessWidget {
               ? null
               : DottedDecoration(
                   dash: const [1, 2],
-                  color: schedulerSettings.intervalLineColor,
+                  color: schedulerSettings.getIntervalLineColor(context),
                   strokeWidth: schedulerSettings.dividerLineWidth,
                   shape: Shape.line,
                   linePosition: direction == Axis.vertical

@@ -26,8 +26,8 @@ class SchedulerSettings with Diagnosticable {
   final Color? selectionFontColor;
   final Color? currentDateBackgroundColor;
   final Color? currentDateFontColor ;
-  final Color dividerLineColor;
-  final Color intervalLineColor;
+  final Color? dividerLineColor;
+  final Color? intervalLineColor;
   final Color currentTimeIndicatorColor;
   final bool currentTimeIndicatorEarlierDays;
   final int currentTimeIndicatorAnimationSpeed;
@@ -60,8 +60,8 @@ class SchedulerSettings with Diagnosticable {
     this.selectionFontColor = const Color(0xff2196f3),
     this.currentDateBackgroundColor, // = const Color(0xff0964ac),
     this.currentDateFontColor, // = const Color(0xff2196f3) ,
-    this.dividerLineColor = const Color(0xffff9800),
-    this.intervalLineColor = const Color(0xff9e9e9e),
+    this.dividerLineColor, // = const Color(0xffff9800),
+    this.intervalLineColor, // = const Color(0xff9e9e9e),
     this.currentTimeIndicatorColor = const Color(0xfff44336),
     this.currentTimeIndicatorEarlierDays = true,
     this.currentTimeIndicatorAnimationSpeed = 250,
@@ -76,4 +76,11 @@ class SchedulerSettings with Diagnosticable {
     return Duration(hours: minuteDiff ~/ 60, minutes: minuteDiff.remainder(60));
   }
 
+  getIntervalLineColor(BuildContext context) {
+    return intervalLineColor ?? Theme.of(context).disabledColor;
+  }
+
+  getDividerLineColor(BuildContext context) {
+    return dividerLineColor ?? Theme.of(context).disabledColor;
+  }
 }

@@ -1,7 +1,8 @@
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:scheduler/scheduler.dart';
+import '/extensions/date_extensions.dart';
+import '/scheduler.dart';
 
 class DateHeader extends StatefulWidget {
   final DateTime date;
@@ -68,7 +69,7 @@ class _DateHeaderState extends State<DateHeader> {
           decoration: widget.decoration ?? BoxDecoration(color: getHeaderColor(),
               border: !widget.showDivider ? null : Border(
                   left: BorderSide(
-                      color: schedulerSettings.dividerLineColor,
+                      color: schedulerSettings.getDividerLineColor(context),
                       width: schedulerSettings.dividerLineWidth))),
           height: widget.height,
           width: widget.width,
@@ -182,7 +183,7 @@ class _DateHeaderState extends State<DateHeader> {
           var minutes = widget.minuteInterval!;
           var parts = 60 / minutes;
           for (var i = 0; i < parts; i++) {
-            dates.add(widget.date.startOfHour.addMinutes(minutes * i));
+            dates.add(widget.date.startOfHour.incMinutes(minutes * i));
           }
           isCurrentDate = date.closestTo(dates)!.minute == widget.date.minute ;
         }

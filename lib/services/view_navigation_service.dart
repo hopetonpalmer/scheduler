@@ -1,6 +1,7 @@
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import '/extensions/date_extensions.dart';
 import 'package:scheduler/scheduler.dart';
 
 import 'scheduler_service.dart';
@@ -58,7 +59,7 @@ class ViewNavigationService {
       case CalendarViewType.timelineWeek:
       case CalendarViewType.timelineWorkWeek: return DateFormat('MMMM yyyy').format(date);
       case CalendarViewType.month:
-      case CalendarViewType.timelineMonth: return DateFormat('MMMM yyyy').format(date.addDays(7).startOfMonth);
+      case CalendarViewType.timelineMonth: return DateFormat('MMMM yyyy').format(date.incDays(7).startOfMonth);
       case CalendarViewType.year:
       case CalendarViewType.quarter: return DateFormat('MMMM yyyy').format(date) + " - " + DateFormat('MMMM yyyy').format(date);
       default: return DateFormat('MMMM d, yyyy').format(date);

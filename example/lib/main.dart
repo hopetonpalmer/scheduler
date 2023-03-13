@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
         useInheritedMediaQuery: true,
         // locale: DevicePreview.locale(context),
         // builder: DevicePreview.appBuilder,
-        theme: ThemeData.dark(useMaterial3: true),
+        theme: ThemeData.light(useMaterial3: true),
         //darkTheme: ThemeData.dark(),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,

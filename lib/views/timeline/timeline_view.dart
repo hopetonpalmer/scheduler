@@ -221,7 +221,7 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
           ? BoxDecoration(
               border: Border(
                   left: BorderSide(
-                      color: schedulerSettings.dividerLineColor,
+                      color: schedulerSettings.getDividerLineColor(context),
                       width: schedulerSettings.dividerLineWidth)))
           : null,
       child: Row(children: intervalCells),

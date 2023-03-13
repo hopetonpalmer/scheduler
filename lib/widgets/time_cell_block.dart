@@ -32,7 +32,7 @@ class TimeCellBlock extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: schedulerSettings.intervalLineColor, width: 0.75
+            color: schedulerSettings.getIntervalLineColor(context), width: 0.75
             // width: 0, //schedulerSettings.dividerLineWidth,
           ),
         ),

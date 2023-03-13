@@ -15,7 +15,7 @@ class DayViewSettings with Diagnosticable {
   final double intervalMinHeight;
 
   const DayViewSettings({
-    this.intervalMinute = IntervalMinute.min30,
+    this.intervalMinute = IntervalMinute.min60,
     this.intervalMinHeight = 40,
     this.showMinutes = false,
     this.positionTimeAtBoundaryMiddle = true,

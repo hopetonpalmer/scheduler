@@ -82,7 +82,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
 
     for (int i = 0; i < DateTime.daysPerWeek; i++) {
       DateTime date = startOfWeek.incDays(i);
-      DateTime endDate = date.addDays(1).subMilliseconds(100);
+      DateTime endDate = date.incDays(1).subMilliseconds(100);
       bool isSameMonth = date.month == currentMonth;
       bool isDisabled = !settings.showLeadingAndTrailingDates && !isSameMonth;
       if (i == 0 && settings.showWeekNumber) {
@@ -160,7 +160,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-              color: schedulerSettings.intervalLineColor,
+              color: schedulerSettings.getIntervalLineColor(context),
               width: schedulerSettings.dividerLineWidth),
         ),
       ),

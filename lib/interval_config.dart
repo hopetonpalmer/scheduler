@@ -158,16 +158,16 @@ mixin IntervalConfig {
   DateTime incrementPageDate(DateTime date, {multiplier = 1}) {
     switch (viewType) {
       case CalendarViewType.timelineDay:
-      case CalendarViewType.day: return date.addDays(multiplier, true);
+      case CalendarViewType.day: return date.incDays(multiplier);
       case CalendarViewType.timelineWeek:
-      case CalendarViewType.week: return date.addDays(multiplier * 7);
+      case CalendarViewType.week: return date.incDays(multiplier * 7);
       case CalendarViewType.timelineWorkWeek:
-      case CalendarViewType.workWeek: return date.addDays(multiplier * 7);
+      case CalendarViewType.workWeek: return date.incDays(multiplier * 7);
       case CalendarViewType.timelineMonth:
-      case CalendarViewType.month: return date.addMonths(multiplier);
-      case CalendarViewType.year: return date.addYears(multiplier);
-      case CalendarViewType.quarter: return date.addMonths(multiplier * 3);
-      default: return date.addDays(multiplier, true);
+      case CalendarViewType.month: return date.incMonths(multiplier);
+      case CalendarViewType.year: return date.incYears(multiplier);
+      case CalendarViewType.quarter: return date.incMonths(multiplier * 3);
+      default: return date.incDays(multiplier);
     }
   }
 
@@ -185,19 +185,19 @@ mixin IntervalConfig {
       case CalendarViewType.timelineWorkWeek:
       case CalendarViewType.week:
       case CalendarViewType.workWeek:
-        result = groupDate.startOfDay.addDays(1 * multiplier, true);
+        result = groupDate.startOfDay.incDays(1 * multiplier);
         break;
       case CalendarViewType.timelineMonth:
       case CalendarViewType.month:
-        result = groupDate.startOfDay.addDays(1 * multiplier, true);
+        result = groupDate.startOfDay.incDays(1 * multiplier);
         break;
       case CalendarViewType.year:
-        result = groupDate.startOfDay.addMonths(1 * multiplier);
+        result = groupDate.startOfDay.incMonths(1 * multiplier);
         break;
       case CalendarViewType.quarter:
-        result = groupDate.startOfDay.addMonths(1 * multiplier);
+        result = groupDate.startOfDay.incMonths(1 * multiplier);
         break;
-      default: result = groupDate.addMinutes(intervalMinute!.value * getTimeBlockSize(groupDate) * multiplier, true);
+      default: result = groupDate.incMinutes(intervalMinute!.value * getTimeBlockSize(groupDate) * multiplier);
     }
     return result;
   }

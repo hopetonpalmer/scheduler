@@ -111,7 +111,7 @@ class _TimeslotCellState extends State<TimeslotCell> {
   }
 
   Widget buildTimeslots(BuildContext context, SchedulerSettings schedulerSettings) {
-    var borderSide = BorderSide(color: schedulerSettings.intervalLineColor, width: schedulerSettings.dividerLineWidth);
+    var borderSide = BorderSide(color: schedulerSettings.getIntervalLineColor(context), width: schedulerSettings.dividerLineWidth);
     var isVertical = widget.flowOrientation == FlowOrientation.vertical;
 
     List<Widget> timeSlotWidgets = getTimeSlotWrapper(context, buildTimeslot(schedulerSettings, isVertical, borderSide));
@@ -121,14 +121,14 @@ class _TimeslotCellState extends State<TimeslotCell> {
 
   Widget buildTimeslot(SchedulerSettings schedulerSettings, bool isVertical, BorderSide borderSide) {
     var borderSideBottom = BorderSide(color: widget.showBottomBorder ?
-    schedulerSettings.intervalLineColor : Colors.transparent, width: schedulerSettings.dividerLineWidth);
+    schedulerSettings.getIntervalLineColor(context) : Colors.transparent, width: schedulerSettings.dividerLineWidth);
     return Container(
       color: isSelected ? schedulerSettings.selectionBackgroundColor : widget.backgroundColor,
       child: Container(
           child: widget.builder != null ? widget.builder!(context, isSelected) :
             !widget.showDivider ? Container() : Align(
               alignment: Alignment.centerLeft,
-              child: Container(color: schedulerSettings.dividerLineColor, width: schedulerSettings.dividerLineWidth)),
+              child: Container(color: schedulerSettings.getDividerLineColor(context), width: schedulerSettings.dividerLineWidth)),
           height: widget.height,
           width: widget.width,
           decoration: widget.isGroupEnd
@@ -136,7 +136,7 @@ class _TimeslotCellState extends State<TimeslotCell> {
                   border: !widget.showBorders ? null : isVertical ? Border(top: borderSide) : Border(left: borderSide, bottom: borderSideBottom))
               : DottedDecoration(
                   dash: const [1, 2],
-                  color: schedulerSettings.intervalLineColor,
+                  color: schedulerSettings.getIntervalLineColor(context),
                   strokeWidth: schedulerSettings.dividerLineWidth,
                   shape: Shape.line,
                   linePosition: isVertical ? LinePosition.top: LinePosition.left)),

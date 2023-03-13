@@ -168,6 +168,11 @@ extension DateExtension on DateTime {
     return addMonths(delta);
   }
 
+  DateTime incYears(int delta){
+    return addYears(delta);
+  }
+
+
   List<DateTime> incDates(int count, IncDate incDate) {
     List<DateTime> result = [];
     for (int i = 0; i < count; i++) {
