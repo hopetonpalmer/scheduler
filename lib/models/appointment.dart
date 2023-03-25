@@ -10,8 +10,10 @@ class Appointment {
   late DateTime _endDate;
   DateTime get endDate => _endDate;
 
+  final appointmentService = AppointmentService.instance;
+
   String subject;
-  Color? color;
+  Color color;
   final List<AppointmentItem> appointmentItems = [];
   final List<AppointmentItem> appointmentItemsByDay = [];
   final List<AppointmentItem> appointmentItemsByWeek = [];
@@ -23,7 +25,6 @@ class Appointment {
     this.subject,
     {this.color = Colors.grey }
   ){
-    color ?? Colors.grey;
     setDates(startDate, endDate);
   }
 
@@ -34,18 +35,18 @@ class Appointment {
   setDates(DateTime start, DateTime end) {
     _startDate = start;
     _endDate = end;
-    _generateItems();
+    _generateAppointmentItems();
   }
 
-  _generateItems() {
+  _generateAppointmentItems() {
     appointmentItems.clear();
     appointmentItemsByWeek.clear();
     appointmentItemsByMonth.clear();
     appointmentItemsByDay.clear();
-    appointmentItems.addAll(AppointmentService().getSingleAppointmentItems(this));
-    appointmentItemsByDay.addAll(AppointmentService().getAppointmentItemsByDay(this));
-    appointmentItemsByWeek.addAll(AppointmentService().getAppointmentItemsByWeek(this));
-    appointmentItemsByMonth.addAll(AppointmentService().getAppointmentItemsByMonth(this));
+    appointmentItems.addAll(appointmentService.getSingleAppointmentItems(this));
+    appointmentItemsByDay.addAll(appointmentService.getAppointmentItemsByDay(this));
+    appointmentItemsByWeek.addAll(appointmentService.getAppointmentItemsByWeek(this));
+    appointmentItemsByMonth.addAll(appointmentService.getAppointmentItemsByMonth(this));
   }
 
 }

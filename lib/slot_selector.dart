@@ -4,16 +4,19 @@ import 'package:scheduler/date_range.dart';
 import 'package:scheduler/services/scheduler_service.dart';
 import 'package:scheduler/time_slot.dart';
 
+import 'common/scheduler_view_helper.dart';
+
 class SlotSelector extends ChangeNotifier {
    DateRange selectedSlotDates = DateRange();
    TimeSlot? _selectionStartSlot;
    TimeSlot? _selectionEndSlot;
    bool isSelecting = false;
+   bool isSelectable = true;
 
    get durationOfSlots => Duration(minutes: _selectionEndSlot!.endDate.differenceInMinutes(_selectionStartSlot!.startDate));
 
    startSelection(TimeSlot slot) {
-     if (isSelecting){
+     if (isSelecting || isSelectable){
        return;
      }
      _selectionStartSlot = slot;
@@ -22,7 +25,7 @@ class SlotSelector extends ChangeNotifier {
    }
    endSelection() {
      isSelecting = false;
-     SchedulerService().scheduler.dataSource!.addAppointment(selectedSlotDates.dates.first, durationOfSlots, "New");
+     // SchedulerService().scheduler.dataSource!.addAppointment(selectedSlotDates.dates.first, durationOfSlots, "New");
    }
 
    selectRange(TimeSlot startSlot, TimeSlot endSlot) {

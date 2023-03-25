@@ -5,6 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:scheduler/extensions/date_extensions.dart';
 import 'package:scheduler/scheduler.dart';
 
+import '../common/scheduler_view_helper.dart';
+import '../constants.dart';
+import 'arrow_indicator.dart';
+import 'dotted_line.dart';
+
 class CurrentTimeIndicator extends StatelessWidget {
   final double clientWidth;
   final double clientHeight;
@@ -29,8 +34,10 @@ class CurrentTimeIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Scheduler scheduler = Scheduler.of(context);
-    Color indicatorColor = scheduler.schedulerSettings.currentTimeIndicatorColor;
-    int lineAlpha = scheduler.schedulerSettings.currentTimeIndicatorEarlierDays ? 50 : 0;
+    SchedulerSettings settings = scheduler.schedulerSettings;
+    Color indicatorColor = settings.currentTimeIndicatorColor ?? Theme.of(context).colorScheme.primary;
+    double lineAlpha = settings.currentTimeIndicatorEarlierDays ? .5 : 0;
+    bool isSmallDevice = SchedulerViewHelper.isSmallDevice(context);
     return ValueListenableBuilder(
       valueListenable: Scheduler.of(context).clockTickNotify,
         builder: (BuildContext context, DateTime value, Widget? child) =>
@@ -44,12 +51,13 @@ class CurrentTimeIndicator extends StatelessWidget {
                 width: max(0,activeLength + activePos - startPos),
                 child: Row(
                 children: [
-                  Container(width: max(0,activePos-startPos), height: 1.25,  color: indicatorColor.withAlpha(lineAlpha)),
-                  Text(DateFormat(DateFormat.HOUR_MINUTE).format(value),
-                      style: TextStyle(color: indicatorColor, fontSize: 9)),
-                  Container(margin: const EdgeInsets.only(left: 5), width: 9, height: 9,
+                  DottedLine(width: max(0,activePos-startPos), color: indicatorColor.withOpacity(lineAlpha), isVerticalFlow: true,),
+                  if (!isSmallDevice)
+                     Text(DateFormat(DateFormat.HOUR_MINUTE).format(value),
+                     style: TextStyle(color: indicatorColor, fontSize: 9)),
+                  Container(margin: EdgeInsets.only(left: isSmallDevice ? 0 : 5), width: 10, height: 10,
                       decoration: BoxDecoration(shape: BoxShape.circle, color: indicatorColor)),
-                  Expanded(child: Container(height: 1.25,  color: indicatorColor)),
+                  Expanded(child: Container(height: .75,  color: indicatorColor)),
                 ]),
               ),
               ),

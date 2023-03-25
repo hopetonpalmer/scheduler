@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import
 
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:dotted_decoration/dotted_decoration.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/appointment_drag_service.dart';
 import 'package:scheduler/slot_selector.dart';
 import 'package:scheduler/time_slot.dart';
+
+import '../common/scheduler_view_helper.dart';
 
 typedef HeaderBuilder = Widget Function(
     BuildContext context, bool isSelected);
@@ -52,11 +55,20 @@ class TimeslotCell extends StatefulWidget {
 
 class _TimeslotCellState extends State<TimeslotCell> {
   late SlotSelector slotSelector;
+  bool _isHovered = false;
   bool isSelected = false;
   bool first = true;
 
   bool get canSelect {
     return !widget.disabled;
+  }
+
+  bool get isHovered => _isHovered && !AppointmentDragService().isDragging;
+  set isHovered(bool value) {
+    if (value != _isHovered){
+      _isHovered = value;
+      setState(() {});
+    }
   }
 
   void selectSlotInRange() {
@@ -96,7 +108,13 @@ class _TimeslotCellState extends State<TimeslotCell> {
       },
       child: MouseRegion(
         cursor: DraggableCursor(),
+        onExit: (event) {
+            isHovered = false;
+        },
         onEnter: (event) {
+          if(event.kind == PointerDeviceKind.mouse){
+            isHovered = true;
+          }
           if (slotSelector.isSelecting) {
             slotSelector.select(widget.timeSlot);
           }
@@ -122,24 +140,37 @@ class _TimeslotCellState extends State<TimeslotCell> {
   Widget buildTimeslot(SchedulerSettings schedulerSettings, bool isVertical, BorderSide borderSide) {
     var borderSideBottom = BorderSide(color: widget.showBottomBorder ?
     schedulerSettings.getIntervalLineColor(context) : Colors.transparent, width: schedulerSettings.dividerLineWidth);
-    return Container(
-      color: isSelected ? schedulerSettings.selectionBackgroundColor : widget.backgroundColor,
-      child: Container(
-          child: widget.builder != null ? widget.builder!(context, isSelected) :
-            !widget.showDivider ? Container() : Align(
-              alignment: Alignment.centerLeft,
-              child: Container(color: schedulerSettings.getDividerLineColor(context), width: schedulerSettings.dividerLineWidth)),
-          height: widget.height,
-          width: widget.width,
-          decoration: widget.isGroupEnd
-              ? BoxDecoration(
-                  border: !widget.showBorders ? null : isVertical ? Border(top: borderSide) : Border(left: borderSide, bottom: borderSideBottom))
-              : DottedDecoration(
-                  dash: const [1, 2],
-                  color: schedulerSettings.getIntervalLineColor(context),
-                  strokeWidth: schedulerSettings.dividerLineWidth,
-                  shape: Shape.line,
-                  linePosition: isVertical ? LinePosition.top: LinePosition.left)),
+    return Stack(
+      children:
+      [ Container(
+           color: isSelected && !SchedulerViewHelper.isMobileLayout(context) ? schedulerSettings.selectionBackgroundColor : widget.backgroundColor,
+           child: Container(
+                child: widget.builder != null ? widget.builder!(context, isSelected) :
+                  !widget.showDivider ? Container() : Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(color: schedulerSettings.getDividerLineColor(context), width: schedulerSettings.dividerLineWidth)),
+                height: widget.height,
+                width: widget.width,
+                decoration: widget.isGroupEnd
+                    ? BoxDecoration(
+                        border: !widget.showBorders ? null : isVertical ? Border(top: borderSide) : Border(left: borderSide, bottom: borderSideBottom))
+                    : DottedDecoration(
+                        dash: const [1, 2],
+                        color: schedulerSettings.getIntervalLineColor(context),
+                        strokeWidth: schedulerSettings.dividerLineWidth,
+                        shape: Shape.line,
+                        linePosition: isVertical ? LinePosition.top: LinePosition.left)),
+         ),
+
+        //--hover border
+        if (isHovered)
+          Container(
+            height: widget.height,
+            width: widget.width,
+            decoration: BoxDecoration(
+                border:  Border.all(color: schedulerSettings.getCellHoverBorderColor(context))),
+          )
+      ],
     );
   }
 

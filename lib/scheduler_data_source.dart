@@ -67,8 +67,8 @@ class SchedulerDataSource extends ChangeNotifier implements ValueListenable<List
   }
 
 
-  addAppointment(DateTime startDate, Duration duration, String subject, {Color? color}){
-    Appointment appointment = Appointment(startDate, startDate.add(duration), subject, color: color);
+  addAppointment(DateTime startDate, Duration duration, String subject, {Color color = const Color(0xff757575)}){
+    Appointment appointment = Appointment(startDate.toLocalTime, startDate.toLocalTime.add(duration), subject, color: color);
     appointments.add(appointment);
     notifyListeners();
   }

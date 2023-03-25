@@ -88,6 +88,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
       if (i == 0 && settings.showWeekNumber) {
         days.add(buildWeekNumber(date));
       }
+      GlobalKey key = GlobalKey();
       TimeSlot timeSlot = TimeSlot(date,endDate,CalendarViewType.month,IntervalType.day, dayWidth);
       days.add(
         Expanded(
@@ -102,7 +103,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
             disabled: isDisabled,
             backgroundColor: cellColor(date),
             flowOrientation: FlowOrientation.horizontal,
-            key: GlobalKey(),
+            key: key,
           ),
         ),
       );
@@ -123,6 +124,18 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
           : settings.trailingDaysTextStyle != null ? settings.trailingDaysTextStyle!.color : null;
     }
 
+
+    String monthDateFormat() {
+      String result = 'd';
+      if (isLongDate){
+        result = 'MMM d';
+        if (MediaQuery.of(context).size.width <= kSmallDevice) {
+          result = 'Md';
+        }
+      }
+      return result;
+    }
+
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       DateHeader(
           height: isLongDate ? null : 40,
@@ -138,7 +151,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
           fontColor: fontColor(date),
           textAlign: TextAlign.center,
           padding: const EdgeInsets.all(5.0),
-          dateFormat: isLongDate ? 'MMM d' : 'd'),
+          dateFormat: monthDateFormat()),
       Expanded(child: Container())
     ]);
   }

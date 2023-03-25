@@ -14,9 +14,11 @@ class DayView extends StatefulWidget {
 class _DayViewState extends State<DayView> with IntervalConfig {
   late SchedulerSettings schedulerSettings;
   late DayViewSettings dayViewSettings;
+  late ScrollController scrollController;
 
   @override
   void initState() {
+    scrollController = ScrollController();
     intervalMinute = SchedulerService().dayViewSettings.intervalMinute;
     schedulerSettings = SchedulerService().schedulerSettings; // Scheduler.of(context).schedulerSettings;
     dayViewSettings = SchedulerService().dayViewSettings; // Scheduler.of(context).dayViewSettings;
@@ -24,58 +26,65 @@ class _DayViewState extends State<DayView> with IntervalConfig {
   }
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var bodyKey = GlobalKey();
-/*    return Material(
-      child: SchedulerView(
-        viewBuilder: (BuildContext context, BoxConstraints constraints) => SchedulerGrid(
-            cols: widget.days,
-            rows: 24
-        )
-      )
-    );*/
     return Material(
       child: SchedulerView(
-        viewBuilder: (BuildContext context, BoxConstraints constraints) => Stack(
-          children: [
-            Column(
-              children: [
-                Container(
-                  color: schedulerSettings.headerBackgroundColor,
-                  child: IntrinsicHeight(
-                    child: Row(
-                      children: buildDayHeaders(
-                        constraints.maxWidth,
-                      ),
+        viewBuilder: (BuildContext context, BoxConstraints constraints) => VirtualPageView(
+          onPageChanged: (virtualIndex, index)=>{
+            if (index == 1) {
+            //  setState(()=>{})
+         /*     scrollController.animateTo(
+                  Scheduler.of(context).schedulerScrollPosNotify.value,
+                  duration: const Duration(milliseconds: 1), curve: Curves.ease
+              )*/
+            }
+          },
+          itemBuilder: (BuildContext context, int index) =>
+          Column(
+            children: [
+              Container(
+                color: schedulerSettings.headerBackgroundColor,
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: buildDayHeaders(
+                      getStartDate(startDate.incDays(index * widget.days)),
+                      constraints.maxWidth,
                     ),
                   ),
                 ),
-                Expanded(
-                  child: LayoutBuilder(
-                    builder: (BuildContext context, BoxConstraints constraints) =>
-                     Container(
-                      color: schedulerSettings.backgroundColor,
-                      child: DayViewBody(
-                        key: bodyKey,
-                        date: startDate,
-                        days: widget.days,
-                        constraints: constraints,
-                      ),
+              ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) =>
+                   Container(
+                    color: schedulerSettings.backgroundColor,
+                    child: DayViewBody(
+                      key: GlobalKey(),
+                      date: getStartDate(startDate.incDays(index * widget.days)),
+                      days: widget.days,
+                      scrollController: scrollController,
+                      constraints: constraints,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  List<Widget> buildDayHeaders(double maxWidth) {
+  List<Widget> buildDayHeaders(DateTime initialDate, double maxWidth) {
     List<Widget> result = [];
     var dayWidth = (maxWidth - dayViewSettings.timebarWidth) / widget.days;
-    DateTime initialDate = startDate;
+    //DateTime initialDate = startDate;
     for (int i = 0; i < widget.days; i++) {
       DateTime date = initialDate.incDays(i);
 
@@ -92,12 +101,15 @@ class _DayViewState extends State<DayView> with IntervalConfig {
             SizedBox(
               height: 20,
               width: dayViewSettings.timebarWidth,
-              child: Text(
-                dayViewSettings.allDayCaption,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: schedulerSettings.timebarFontColor,
+              child: Visibility(
+                visible: !SchedulerViewHelper.isMobileLayout(context),
+                child: Text(
+                  dayViewSettings.allDayCaption,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: schedulerSettings.timebarFontColor,
+                  ),
                 ),
               ),
             ),

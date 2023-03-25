@@ -8,7 +8,7 @@ class DraggableCursor extends MaterialStateMouseCursor {
   @override
   MouseCursor resolve(Set<MaterialState> states) {
     if (AppointmentDragService().isDragging){
-      return SystemMouseCursors.grab;
+      return SystemMouseCursors.move;
     }
     return SystemMouseCursors.basic;
   }

@@ -2,11 +2,15 @@ library scheduler;
 
 import 'dart:async';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_date/dart_date.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:loop_page_view/loop_page_view.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:scheduler/date_range.dart';
 import 'package:scheduler/draggable_cursor.dart';
@@ -28,8 +32,14 @@ import 'package:scheduler/widgets/scroll_aware_stack.dart';
 import 'package:scheduler/widgets/timeslot_cell.dart';
 import 'package:uuid/uuid.dart';
 
+import 'common/scheduler_view_helper.dart';
 import 'constants.dart';
 import 'scheduler_controller.dart';
+import 'widgets/long_press_draggable_ex.dart';
+import 'widgets/virtual_page_view.dart';
+import 'widgets/view_navigator/button_navigation.dart';
+import 'widgets/view_navigator/compact_popup_navigation.dart';
+import 'widgets/view_navigator/popup_navigation.dart';
 
 part 'views/day/day_view.dart';
 part 'views/week/week_view.dart';
@@ -44,7 +54,7 @@ part 'settings/day_view_settings.dart';
 part 'settings/timeline_view_settings.dart';
 part 'settings/scheduler_settings.dart';
 part 'settings/appointment_settings.dart';
-part 'widgets/view_navigator.dart';
+part 'widgets/view_navigator/view_navigator.dart';
 part 'typedefs.dart';
 
 
@@ -174,7 +184,10 @@ class Scheduler extends InheritedWidget {
     ViewNavigationService().viewType = value;
   }
 
-  void notifySchedulerScrollPos(double value) {
+  void notifySchedulerScrollPos(double value, [ScrollController? syncController]) {
+    if (syncController != null){
+      syncController!.position.jumpTo(value);
+    }
     schedulerScrollPosNotify.value = value;
   }
 

@@ -18,11 +18,13 @@ class DayViewBody extends StatefulWidget {
   final DateTime date;
   final int days;
   final BoxConstraints constraints;
+  final ScrollController scrollController;
   const DayViewBody({
     Key? key,
     required this.date,
     required this.days,
     required this.constraints,
+    required this.scrollController,
   }) : super(key: key);
 
   double get height => constraints.maxHeight;
@@ -41,14 +43,17 @@ class DayViewBody extends StatefulWidget {
 }
 
 class _DayViewBodyState extends State<DayViewBody> {
-  double scrollPos = 0;
-  final _scrollController = ScrollController();
   List<TimeSlot> timeSlots = [];
   AppointmentRenderService? appointmentRenderService;
+  ScrollController get scrollController => widget.scrollController;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) =>{
+       scrollController.jumpTo(Scheduler.of(context).schedulerScrollPosNotify.value)
+    });
+
  /*   SchedulerService().scheduler.dataSource!.visibleDateRange
         .setRange(widget.date, widget.date.incDays(widget.days, true));
     SchedulerService().scheduler.controller.addListener(() {
@@ -59,7 +64,6 @@ class _DayViewBodyState extends State<DayViewBody> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -74,7 +78,7 @@ class _DayViewBodyState extends State<DayViewBody> {
     double dayWidth = (widget.width - timebarWidth) / widget.days;
     double activeDayLeft = timebarWidth +
         (dayWidth *
-            DateTime.now().startOfDay.differenceInDays(widget.date.startOfDay));
+            DateTime.now().startOfDay.diffInDays(widget.date.startOfDay));
     double height = widget.intervalCount * widget.intervalHeight;
     Rect calendarRect = Rect.fromLTWH(
         timebarWidth, 0, widget.width - timebarWidth, widget.height);
@@ -111,16 +115,15 @@ class _DayViewBodyState extends State<DayViewBody> {
     }
 
     return Stack(
-      //scrollController: _scrollController,
+      //scrollController: scrollController,
       children: [
         NotificationListener<ScrollUpdateNotification>(
           onNotification: (notification) {
-            Scheduler.of(context)
-                .notifySchedulerScrollPos(notification.metrics.pixels);
+            Scheduler.of(context).notifySchedulerScrollPos(notification.metrics.pixels);
             return false;
           },
           child: ListView.builder(
-              controller: _scrollController,
+              controller: scrollController,
               physics: const ClampingScrollPhysics(),
               itemCount: widget.intervalCount, // 24
               itemBuilder: (context, index) {
@@ -142,7 +145,7 @@ class _DayViewBodyState extends State<DayViewBody> {
           valueListenable: dataSource,
           builder: (BuildContext context, value, Widget? child) =>
               ScrollAwareStack(
-                  scrollController: _scrollController,
+                  scrollController: scrollController,
                   children: [...?renderAppointments()]),
         ),
         CurrentTimeIndicator(

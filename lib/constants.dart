@@ -1,21 +1,24 @@
 import 'scheduler.dart';
 
-const smallDevice = 450;
-const mediumDevice = 800;
+const kSmallDevice = 450;
+const kMediumDevice = 700;
+const kLargeDevice = 1400;
+const double kMobileViewWidth = 767;
 
-const viewDayCaption  = 'DAY';
-const viewWeekCaption  = 'WEEK';
-const viewWorkWeekCaption  = 'WORK WEEK';
-const viewMonthCaption = 'MONTH';
-const viewTimelineDayCaption = 'TIMELINE DAY';
-const viewTimelineWeekCaption = 'TIMELINE WEEK';
-const viewTimelineWorkWeekCaption = 'TIMELINE WORK WEEK';
-const viewTimelineMonthCaption = 'TIMELINE MONTH';
-const viewTimelineQuarterCaption = 'TIMELINE QUARTER';
-const viewYearCaption = 'YEAR';
-const viewAgendaCaption = 'AGENDA';
 
-const viewTypes = <CalendarViewType>[
+const kViewDayCaption  = 'DAY';
+const kViewWeekCaption  = 'WEEK';
+const kViewWorkWeekCaption  = 'WORK WEEK';
+const kViewMonthCaption = 'MONTH';
+const kViewTimelineDayCaption = 'TIMELINE DAY';
+const kViewTimelineWeekCaption = 'TIMELINE WEEK';
+const kViewTimelineWorkWeekCaption = 'TIMELINE WORK WEEK';
+const kViewTimelineMonthCaption = 'TIMELINE MONTH';
+const kViewTimelineQuarterCaption = 'TIMELINE QUARTER';
+const kViewYearCaption = 'YEAR';
+const kViewAgendaCaption = 'AGENDA';
+
+const kViewTypes = <CalendarViewType>[
   CalendarViewType.day,
   CalendarViewType.week,
   CalendarViewType.workWeek,
@@ -29,16 +32,16 @@ const viewTypes = <CalendarViewType>[
   CalendarViewType.agenda
 ];
 
-const viewCaptions = <String>[
-  viewDayCaption,
-  viewWeekCaption,
-  viewWorkWeekCaption,
-  viewMonthCaption,
-  viewTimelineDayCaption,
-  viewTimelineWeekCaption,
-  viewTimelineWorkWeekCaption,
-  viewTimelineMonthCaption,
-  viewTimelineQuarterCaption,
-  viewYearCaption,
-  viewAgendaCaption
+const kViewCaptions = <String>[
+  kViewDayCaption,
+  kViewWeekCaption,
+  kViewWorkWeekCaption,
+  kViewMonthCaption,
+  kViewTimelineDayCaption,
+  kViewTimelineWeekCaption,
+  kViewTimelineWorkWeekCaption,
+  kViewTimelineMonthCaption,
+  kViewTimelineQuarterCaption,
+  kViewYearCaption,
+  kViewAgendaCaption
 ];

@@ -1,6 +1,7 @@
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../services/view_navigation_service.dart';
 import '/extensions/date_extensions.dart';
 import '/scheduler.dart';
 
@@ -55,12 +56,14 @@ class DateHeader extends StatefulWidget {
 
 class _DateHeaderState extends State<DateHeader> {
   late SchedulerSettings schedulerSettings;
+  late CalendarViewType viewType;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     schedulerSettings = Scheduler.of(context).schedulerSettings;
+    viewType = ViewNavigationService().viewType;
     return ValueListenableBuilder(
       valueListenable: Scheduler.of(context).clockTickNotify,
       builder: (BuildContext context, value, Widget? child) =>
@@ -114,10 +117,12 @@ class _DateHeaderState extends State<DateHeader> {
   }
 
   Widget dayStyle3() {
-    return Column(children:[
-      dateText(formattedDate: DateFormat(DateFormat.ABBR_WEEKDAY).format(widget.date).toUpperCase(),
+    return Column(
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      children:[dateText(formattedDate: widget.date.responsiveDayName(DateFormat.ABBR_WEEKDAY,
+          context, viewType == CalendarViewType.day).toUpperCase(),
           size: 13, matchFontColorWhenSelected: true),
-      dateText(format: DateFormat.DAY, size: 25, circleCurrentDate: true)
+      dateText(format: DateFormat.DAY, size: 22, circleCurrentDate: true)
     ]);
   }
 
@@ -142,15 +147,15 @@ class _DateHeaderState extends State<DateHeader> {
       width: widget.width,
       // height: widget.height,
       child: !widget.isLongText && circleCurrentDate
-          ? CircleAvatar(backgroundColor: getCircleColor() ,
-          radius: 20, child: headerText(true)) /*Container(
-              child: Center(child: headerText()),
-              padding:  const EdgeInsets.all(5),
-              decoration: ShapeDecoration(shape: widget.isLongText
-                 ? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))
-                 : const CircleBorder() ,
-              color: schedulerSettings.currentDateBackgroundColor))*/
-          : headerText()
+          ? Padding(
+            padding: const EdgeInsets.only(top: 3),
+            child: CircleAvatar(backgroundColor: getCircleColor() ,
+            radius: 18, child: headerText(true)),
+          )
+          : Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: headerText(),
+          )
     );
   }
 

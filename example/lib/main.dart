@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
         useInheritedMediaQuery: true,
         // locale: DevicePreview.locale(context),
         // builder: DevicePreview.appBuilder,
-        theme: ThemeData.light(useMaterial3: true),
+        theme: ThemeData.dark(useMaterial3: true),
         //darkTheme: ThemeData.dark(),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         // home: SafeArea(child: jzDayView())
         // home: SafeArea(child: jzWeekView())
         //  home: SafeArea(child: Scheduler(view: TimelineView(pages: 5, calendarType: CalendarType.month, intervalMinute: IntervalMinute.min15)))
-        home: SafeArea(child: JzScheduler(dataSource: getDataSource(), viewType: CalendarViewType.week,
+        home: SafeArea(child: JzScheduler(dataSource: getDataSource(), viewType: CalendarViewType.workWeek,
           schedulerSettings: const SchedulerSettings(
  //           locale: 'Ja_Jp'
 /*            headerBackgroundColor: Colors.white,
@@ -67,7 +67,10 @@ class _MyAppState extends State<MyApp> {
   SchedulerDataSource getDataSource() {
     SchedulerDataSource result = SchedulerDataSource();
     DateTime today = DateTime.now().startOfDay.addHours(9);
-    result.addAppointment(today, const Duration(minutes: 120), "test now", color: Colors.red);
+    result.addAppointment(today, const Duration(minutes: 120), "Morning meeting with India", color: Colors.red);
+    result.addAppointment(today.addDays(1), const Duration(minutes: 220), "Breakfast", color: Colors.deepPurple);
+    result.addAppointment(today.addDays(2), const Duration(minutes: 220), "Breakfast", color: Colors.lightGreen);
+    result.addAppointment(today.addHours(4), const Duration(minutes: 220), "Workout", color: Colors.orange);
     return result;
     result.addAppointment(today, const Duration(minutes: 80), "test red", color: Colors.red);
     result.addAppointment(today, const Duration(minutes: 180), "test blue", color: Colors.blue);

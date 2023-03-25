@@ -29,7 +29,7 @@ class _SchedulerViewState extends State<SchedulerView> {
         onKey: handleKeyPress,
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) => Container(
-            color: schedulerSettings.backgroundColor,
+            color: schedulerSettings.backgroundColor ?? Theme.of(context).colorScheme.background,
             child: widget.viewBuilder(context, constraints),
           ),
         ),
@@ -39,7 +39,7 @@ class _SchedulerViewState extends State<SchedulerView> {
 
   handleKeyPress(RawKeyEvent event) {
     if (event.isKeyPressed(LogicalKeyboardKey.delete)){
-      AppointmentService().deleteSelectedAppointment();
+      AppointmentService.instance.deleteSelectedAppointment();
     } else if (event.isKeyPressed(LogicalKeyboardKey.escape)){
       AppointmentDragService().cancelDrag();
     }

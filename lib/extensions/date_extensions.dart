@@ -1,5 +1,8 @@
 import 'package:dart_date/dart_date.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+
+import '../constants.dart';
 
 typedef IncDate = DateTime Function(DateTime date, int delta);
 
@@ -113,14 +116,45 @@ extension DateExtension on DateTime {
   }
 
   DateTime getStartOfWeek(int weekStartDay) {
-     int isoWeekStartDay = startOfWeek.weekday;
+    var date = toUtc();
+    int isoWeekStartDay = date.startOfWeek.weekday;
      if (isoWeekStartDay == weekStartDay) {
-       if (weekday == startOfWeek.weekday) {
+       if (weekday == date.startOfWeek.weekday) {
          return this;
        }
-       return startOfWeek;
+       return date.startOfWeek;
      }
-     return startOfWeek.incDays(weekStartDay); // getPreviousDay(weekStartDay);
+     return date.startOfWeek.incDays(weekStartDay); // getPreviousDay(weekStartDay);
+  }
+
+  DateTime getStartOfWorkWeeks(int weekStartDay, int workWeekStartDay){
+
+    var date = getStartOfWeek(weekStartDay);
+    return date.getNextDay(workWeekStartDay);
+  }
+
+  DateTime getStartOfWorkWeek(int weekStartDay, int workWeekStartDay) {
+    const int workDays = 5;
+    // Find the previous startDayOfWeek
+    DateTime startOfWeek = getStartOfWeek(weekStartDay);
+    DateTime startOfWorkWeek = startOfWeek.getNextDay(workWeekStartDay);
+    DateTime endOfWorkWeek = startOfWorkWeek.addDays(workDays);
+    // If the previous startDayOfWeek is already in the workweek, subtract a week to get to the previous workweek
+    if (endOfWorkWeek < this) {
+      startOfWorkWeek = startOfWorkWeek.getNextDay(workWeekStartDay);
+    }
+    return startOfWorkWeek;
+  }
+
+  DateTime getNextDay(int day){
+    DateTime date = this;
+    for (int i = 0; i < 7; i++) {
+      date = date.incDays(i);
+      if (date.getDay == day) {
+        break;
+      }
+    }
+    return date;
   }
 
   DateTime getPreviousDay(int dayNumber) {
@@ -140,16 +174,30 @@ extension DateExtension on DateTime {
   }
 
   DateTime incMinutes(int delta) {
-    return addMinutes(delta, true);
+    //return addMinutes(delta, true);
     // return DateTime.utc(year, month, day, hour, minute + delta, second, millisecond, microsecond);
     // return addDuration(Duration(minutes: delta));
      var result = addMinutes(delta, true);
      var totMinutes = result.totalMinutes;
      var diff = totMinutes - totalMinutes;
      if (diff != delta) {
-      result = DateTime.utc(year, month, day, hour, minute + delta, second, millisecond, microsecond);
+        result = DateTime.utc(year, month, day, hour, minute + delta, second, millisecond, microsecond);
      }
      return result;
+  }
+
+  int diffInDays(DateTime other) {
+    var date1 = DateTime.utc(year, month, day, hour, minute, second, millisecond, microsecond);
+    var date2 = DateTime.utc(other.year, other.month, other.day, other.hour, other.minute, other.second, other.millisecond, other.microsecond);
+    var result = date1.differenceInDays(date2);
+    return result;
+  }
+
+  Duration diffInDuration(DateTime other ){
+    var date1 = DateTime.utc(year, month, day, hour, minute, second, millisecond, microsecond);
+    var date2 = DateTime.utc(other.year, other.month, other.day, other.hour, other.minute, other.second, other.millisecond, other.microsecond);
+    var result = date1.difference(date2);
+    return result;
   }
 
   DateTime addDuration(Duration duration) {
@@ -172,6 +220,18 @@ extension DateExtension on DateTime {
     return addYears(delta);
   }
 
+  String responsiveDayName(String defaultFormat, BuildContext context, bool useDefault) {
+    double clientWidth = MediaQuery.of(context).size.width;
+    String format = defaultFormat;
+    if (!useDefault){
+      if (clientWidth <= kSmallDevice) {
+        format = "ccccc";
+      } else if (clientWidth <= kMediumDevice) {
+        format = "EEE";
+      }
+    }
+    return DateFormat(format).format(this);
+  }
 
   List<DateTime> incDates(int count, IncDate incDate) {
     List<DateTime> result = [];

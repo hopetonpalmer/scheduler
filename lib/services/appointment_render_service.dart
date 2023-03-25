@@ -101,7 +101,7 @@ class AppointmentRenderService {
       int dayIndex = (appointmentItem.geometry.left + delta.dx - calendarRect.left) ~/ dayWidth;
       DateTime targetDate = startDate.incDays(dayIndex);
       int minutes = change ~/pixelsPerMinute;
-      int dayDiff = targetDate.differenceInDays(appointmentItem.startDate.startOfDay);
+      int dayDiff = targetDate.diffInDays(appointmentItem.startDate.startOfDay);
       durationChange = Duration(days: dayDiff, minutes: minutes);
     } else {
       int minutesDiff = change ~/ pixelsPerMinute;

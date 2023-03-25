@@ -29,7 +29,10 @@ class ViewNavigationService {
 
   set viewType(CalendarViewType value) {
     if (viewChangeNotify.value != value || currentView == null) {
-      _currentView = _viewOfViewType(value);
+      _currentView = AnimatedOpacity(
+          duration: const Duration(seconds: 1),
+          opacity: 1,
+          child: _viewOfViewType(value));
       viewChangeNotify.value = value;
     }
   }

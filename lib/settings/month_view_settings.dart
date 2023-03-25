@@ -29,9 +29,9 @@ class MonthViewSettings with Diagnosticable {
   });
 
   calcHeaderFormat(double clientWidth) {
-    if (clientWidth <= 400) {
+    if (clientWidth <= kSmallDevice) {
       return "ccccc";
-    } else if (clientWidth <= 700) {
+    } else if (clientWidth <= kMediumDevice) {
       return "EEE";
     }
     return headerDayNameFormat;

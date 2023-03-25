@@ -36,16 +36,18 @@ mixin IntervalConfig {
                           viewType == CalendarViewType.timelineDay;
 
 
+  DateTime get startDate => getStartDate();
 
-  DateTime get startDate {
-    DateTime date = SchedulerService().scheduler.controller.startDate.startOfDay;
+  DateTime getStartDate([DateTime? proposedDate]) {
+    DateTime date = proposedDate ?? SchedulerService().scheduler.controller.startDate.startOfDay;
     switch (viewType) {
       case CalendarViewType.timelineDay:
       case CalendarViewType.day: return date.startOfDay;
       case CalendarViewType.timelineWeek:
       case CalendarViewType.week: return date.getStartOfWeek(SchedulerService().schedulerSettings.firstDayOfWeek);
       case CalendarViewType.timelineWorkWeek:
-      case CalendarViewType.workWeek: return date.getStartOfWeek(SchedulerService().schedulerSettings.firstDayOfWorkWeek);
+      case CalendarViewType.workWeek: return date.getStartOfWorkWeek(SchedulerService().schedulerSettings.firstDayOfWeek,
+        SchedulerService().schedulerSettings.firstDayOfWorkWeek);
       case CalendarViewType.timelineMonth: return date.startOfMonth;
       case CalendarViewType.month: return date.startOfMonth.startOfWeek;
       case CalendarViewType.year: return date.startOfYear;

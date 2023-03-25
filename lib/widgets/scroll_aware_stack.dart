@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:scheduler/services/appointment_drag_service.dart';
 
+import '../common/scheduler_view_helper.dart';
+
 class ScrollAwareStack extends StatelessWidget {
   final List<Widget> children;
   final ScrollController scrollController;
@@ -17,8 +19,8 @@ class ScrollAwareStack extends StatelessWidget {
         _setActiveScrollController();
       },
       onPointerMove: (event) {
-        if (event.down) {
-          _scrollPastViewPortWhenNeeded(event);
+        if (event.down && !SchedulerViewHelper.isMobileLayout(context)) {
+           _scrollPastViewPortWhenNeeded(event);
         }
       },
       child: Stack(
@@ -30,6 +32,7 @@ class ScrollAwareStack extends StatelessWidget {
   void _setActiveScrollController() {
     AppointmentDragService().activeScrollController = scrollController;
   }
+
 
   void _scrollPastViewPortWhenNeeded(PointerMoveEvent event) {
     int boundaryOffset = 25;

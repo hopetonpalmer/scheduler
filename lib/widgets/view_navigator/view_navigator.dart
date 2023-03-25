@@ -1,0 +1,104 @@
+part of scheduler;
+
+class ViewNavigator extends StatefulWidget {
+  final bool isDropdown;
+  const ViewNavigator({Key? key, this.isDropdown = true}) : super(key: key);
+
+  @override
+  _ViewNavigatorState createState() => _ViewNavigatorState();
+}
+
+class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
+  final SchedulerController controller = SchedulerService().scheduler.controller;
+  final Scheduler scheduler = SchedulerService().scheduler;
+
+  selectView(CalendarViewType viewType) {
+    controller.viewType = viewType;
+  }
+
+  @override
+  initState() {
+    selectView(controller.viewType);
+    super.initState();
+    controller.addListener(() => mounted ? setState(() {}) : null);
+  }
+
+  @override
+  dispose() {
+    controller.removeListener(() {});
+    super.dispose();
+  }
+
+  selectDate(GlobalKey key) async {
+    RenderBox box = key.currentContext?.findRenderObject() as RenderBox;
+    Offset position = box.localToGlobal(Offset.zero); //this is global position
+    var selectedDate = await showDatePicker(
+      context: context,
+      initialDatePickerMode: DatePickerMode.day,
+      initialDate: startDate,
+      initialEntryMode: DatePickerEntryMode.calendar,
+      firstDate: DateTime.now().addYears(-100),
+      lastDate: DateTime.now().addYears(100),
+      // locale: Locale(scheduler.schedulerSettings.locale)
+    );
+    if (selectedDate != null) {
+      controller.goDate(selectedDate);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    GlobalKey dateSelectionKey = GlobalKey();
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(width: 0.5, color: scheduler.schedulerSettings.getDividerLineColor(context)),
+        ),
+      ),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Row(children: [
+          Padding(
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              child: TextButton(
+                  onPressed: () => controller.goToday(),
+                  child: const Text("Today"))),
+          Visibility(
+            visible: !SchedulerViewHelper.isMobileLayout(context),
+            child: IconButton(
+              iconSize: 20.0,
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () => controller.goPreviousDate(),
+            ),
+          ),
+          Visibility(
+            visible: !SchedulerViewHelper.isMobileLayout(context),
+            child: IconButton(
+              iconSize: 20.0,
+              icon: const Icon(Icons.arrow_forward_ios),
+              onPressed: () => controller.goNextDate(),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: Text(
+                ViewNavigationService().navigationRangeToString(startDate),
+                key: dateSelectionKey),
+          ),
+          IconButton(
+            iconSize: 20.0,
+            icon: const Icon(Icons.arrow_drop_down),
+            onPressed: () => selectDate(dateSelectionKey),
+          ),
+        ]),
+        if (widget.isDropdown)
+          (SchedulerViewHelper.isMobileLayout(context))
+           ? CompactPopupNavigation(selectView: selectView)
+           : PopupNavigation(selectView: selectView)
+        else
+          ButtonNavigation(selectView: selectView)
+      ]),
+    );
+  }
+}
+
+

@@ -25,10 +25,11 @@ class SchedulerSettings with Diagnosticable {
   final Color? selectionBackgroundColor;
   final Color? selectionFontColor;
   final Color? currentDateBackgroundColor;
+  final Color? cellHoverBorderColor;
   final Color? currentDateFontColor ;
   final Color? dividerLineColor;
   final Color? intervalLineColor;
-  final Color currentTimeIndicatorColor;
+  final Color? currentTimeIndicatorColor;
   final bool currentTimeIndicatorEarlierDays;
   final int currentTimeIndicatorAnimationSpeed;
   final Color? defaultAppointmentColor;
@@ -45,7 +46,7 @@ class SchedulerSettings with Diagnosticable {
     this.dayEndTime = const TimeOfDay(hour:24, minute:0),
     this.workDayStartTime = const TimeOfDay(hour: 9, minute: 0),
     this.workDayEndTime = const TimeOfDay(hour: 17, minute: 0),
-    this.dividerLineWidth = 0.5,
+    this.dividerLineWidth = 0.75,
     this.snapToTimeSlot = true,
     this.fontFamily = "Roboto",
     this.timebarBackgroundColor, // = const Color(0xff616161),
@@ -58,11 +59,12 @@ class SchedulerSettings with Diagnosticable {
     this.backgroundColor, //= const Color(0xffffffff),
     this.selectionBackgroundColor = const Color(0x90ACC5EE),
     this.selectionFontColor = const Color(0xff2196f3),
+    this.cellHoverBorderColor, // const(0xffff9800),
     this.currentDateBackgroundColor, // = const Color(0xff0964ac),
     this.currentDateFontColor, // = const Color(0xff2196f3) ,
     this.dividerLineColor, // = const Color(0xffff9800),
     this.intervalLineColor, // = const Color(0xff9e9e9e),
-    this.currentTimeIndicatorColor = const Color(0xfff44336),
+    this.currentTimeIndicatorColor = const Color(0xfffc1302),
     this.currentTimeIndicatorEarlierDays = true,
     this.currentTimeIndicatorAnimationSpeed = 250,
     this.defaultAppointmentColor = const Color(0xFF939495),
@@ -77,10 +79,14 @@ class SchedulerSettings with Diagnosticable {
   }
 
   getIntervalLineColor(BuildContext context) {
-    return intervalLineColor ?? Theme.of(context).disabledColor;
+    return intervalLineColor ?? Theme.of(context).dividerColor.withOpacity(.25);
   }
 
   getDividerLineColor(BuildContext context) {
-    return dividerLineColor ?? Theme.of(context).disabledColor;
+    return dividerLineColor ?? Theme.of(context).dividerColor.withOpacity(.25);
+  }
+
+  getCellHoverBorderColor(BuildContext context) {
+    return cellHoverBorderColor ?? Theme.of(context).colorScheme.primary;
   }
 }
