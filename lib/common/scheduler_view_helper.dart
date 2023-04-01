@@ -23,4 +23,13 @@ class SchedulerViewHelper {
     return MediaQuery.of(context).size.width <= kSmallDevice;
   }
 
+  static bool isLargeDevice(BuildContext context){
+    return MediaQuery.of(context).size.width >= kLargeDevice;
+  }
+
+  static bool isMediumDevice(BuildContext context){
+    var width = MediaQuery.of(context).size.width;
+    return  width > kSmallDevice && width <= kMediumDevice;
+  }
+
 }

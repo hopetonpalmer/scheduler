@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/scheduler_service.dart';
 import 'package:scheduler/widgets/date_header.dart';
-import 'package:scheduler/widgets/time_cell.dart';
+import 'package:scheduler/widgets/time_cell/time_cell.dart';
 
 class TimeCellBlock extends StatelessWidget {
   final IntervalType intervalType;
@@ -26,24 +26,28 @@ class TimeCellBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final schedulerSettings = SchedulerService().schedulerSettings;
-    return Container(
+    final lineColor = schedulerSettings.getIntervalLineColor(context);
+    final lineWidth = schedulerSettings.dividerLineWidth;
+    return SizedBox(
       //width: (cellSize.width * blockDates.length) + cellHeaderSize.width,
       height: cellSize.height * cellCount,
-      decoration: BoxDecoration(
+    /*  decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: schedulerSettings.getIntervalLineColor(context), width: 0.75
-            // width: 0, //schedulerSettings.dividerLineWidth,
-          ),
+              color: lineColor,
+              width: schedulerSettings.dividerLineWidth
+              // width: 0, //schedulerSettings.dividerLineWidth,
+              ),
         ),
-      ),
+      ),*/
       child: CustomPaint(
         painter: CellBlockPainter(
-          headerSize: cellHeaderSize,
-          rows: cellCount,
-          cols: blockDates.length,
-          cellSize: cellSize
-        ),
+            lineWidth: lineWidth,
+            lineColor: lineColor,
+            headerSize: cellHeaderSize,
+            rows: cellCount,
+            cols: blockDates.length,
+            cellSize: cellSize),
       ),
     );
   }
@@ -66,7 +70,12 @@ class TimeCellBlock extends StatelessWidget {
       }
       blockCells.add(Container(
         height: cellSize.height * cellCount,
-        decoration: const BoxDecoration(border: Border(left: BorderSide(color: Colors.orange, width: 0.5))), //todo: set to settings dividerWidth
+        decoration: const BoxDecoration(
+            border: Border(
+                left: BorderSide(
+          color: Colors.orange,
+          width: 0.5,
+        ))), //todo: set to settings dividerWidth
         child: Flex(
           direction: direction,
           children: dateCells,
@@ -84,13 +93,22 @@ class CellBlockPainter extends CustomPainter {
   final int cols;
   final int rows;
   final Size cellSize;
-  CellBlockPainter({required this.cols, required this.rows, required this.cellSize, required this.headerSize});
+  final Color lineColor;
+  final double lineWidth;
+  CellBlockPainter({
+    required this.cols,
+    required this.rows,
+    required this.cellSize,
+    required this.headerSize,
+    required this.lineColor,
+    required this.lineWidth
+  });
 
   void drawDashLine(Canvas canvas, Size size, double top, double left) {
     double dashWidth = 3, dashSpace = 1, startX = left;
     final paint = Paint()
-      ..color = Colors.grey
-      ..strokeWidth = .5;
+      ..color = lineColor.withOpacity(0.1)
+      ..strokeWidth = lineWidth;
     while (startX < size.width) {
       canvas.drawLine(Offset(startX, top), Offset(startX + dashWidth, top), paint);
       startX += dashWidth + dashSpace;
@@ -99,21 +117,23 @@ class CellBlockPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-      final paint = Paint()..color = Colors.red..strokeWidth=.5;
+    final paint = Paint()
+      ..color = lineColor
+      ..strokeWidth = .5;
 
-      double top = 0;
-      for(int i = 0; i < rows; i++) {
-        top += cellSize.height;
+    double top = 0;
+    for (int i = 0; i < rows; i++) {
+      top += cellSize.height;
 
-        if (i < rows - 1) {
-          drawDashLine(canvas, size, top, 0);
-        }
+      if (i < rows - 1) {
+        drawDashLine(canvas, size, top, 0);
       }
-      double left = headerSize.width;
-      for (int i = 0; i < cols; i++) {
-        canvas.drawLine(Offset(left, 1), Offset(left, size.height), paint);
-        left += ((size.width - headerSize.width) / cols);
-      }
+    }
+    double left = headerSize.width;
+    for (int i = 0; i < cols; i++) {
+      canvas.drawLine(Offset(left, 1), Offset(left, size.height), paint);
+      left += ((size.width - headerSize.width) / cols);
+    }
   }
 
   @override
@@ -121,6 +141,3 @@ class CellBlockPainter extends CustomPainter {
     return false;
   }
 }
-
-
-

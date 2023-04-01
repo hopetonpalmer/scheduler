@@ -128,6 +128,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
   @override
   Widget build(BuildContext context) {
+    const minResponsiveHeight = 50;
     Scheduler scheduler = Scheduler.of(context);
     slotSelector = scheduler.slotSelector;
     AppointmentSettings settings = scheduler.appointmentSettings;
@@ -139,7 +140,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
     Widget appointmentViewBody(double opacity, bool dragging) {
       return Container(
-          padding: const EdgeInsets.only(left: 4, top: 2),
+          padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2, right: 4),
           decoration: widget.decoration ??
               BoxDecoration(
                 color: color.withOpacity(opacity),
@@ -151,69 +152,77 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRect(
+              FittedBox(
                 child: Text(widget.appointmentItem.appointment.subject,
                     style: widget.textStyle ??
                         TextStyle(
                             color: textColor,
-                            fontSize: 12.0,
+                            fontSize: height >= minResponsiveHeight ? 12.0 : height * .40,
                             overflow: TextOverflow.ellipsis)),
               ),
-              ClipRect(
-                child: Text(
-                    DateFormat('h:mm a').format(widget.appointmentItem.appointment.startDate) +' - ' +DateFormat('h:mm a')
-                            .format(widget.appointmentItem.appointment.endDate),
-                    style: widget.textStyle ??
-                        TextStyle(
-                            color: textColor,
-                            fontSize: 12.0,
-                            overflow: TextOverflow.ellipsis)),
+              Visibility(
+                visible: height > minResponsiveHeight,
+                child: ClipRect(
+                  child: FittedBox(
+                    child: Text(
+                        DateFormat('h:mm a').format(widget.appointmentItem.appointment.startDate) +' - ' +DateFormat('h:mm a')
+                                .format(widget.appointmentItem.appointment.endDate),
+                        style: widget.textStyle ??
+                            TextStyle(
+                                color: textColor,
+                                fontSize: 12.0,
+                                overflow: TextOverflow.ellipsis)),
+                  ),
+                ),
               ),
             ],
           ));
     }
 
     Widget appointmentView({double opacity = 1, bool dragging = false}) {
-      return Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerDown: (event) {
-          isHovered = false;
-          if (SchedulerViewHelper.isMobileLayout(context)) {
-            longPressTimer = Timer(settings.selectionDelay, () {
-              cancelLongPressTimer();
-              if (settings.hapticFeedbackOnLongPressSelection) {
-                  HapticFeedback.selectionClick();
-              }
-              selectAppointment();
-            });
-          }
-        },
-        onPointerUp: (event) {
-          cancelLongPressTimer();
-          if (!SchedulerViewHelper.isMobileLayout(context)) {
-            selectAppointment();
-          }
-        },
-        onPointerMove: (event) {
-          if (event.down && event.delta.distanceSquared > 2) {
-            cancelLongPressTimer();
-          }
-        },
-        child: MouseRegion(
-          cursor: DraggableCursor(),
-          opaque: !SchedulerViewHelper.isMobileLayout(context),
-          onEnter: (event) {
-            if (event.kind == PointerDeviceKind.mouse) {
-              isHovered = true;
+      return Padding(
+        padding: const EdgeInsets.only(left: 0.5),
+        child: Listener(
+          behavior: HitTestBehavior.translucent,
+          onPointerDown: (event) {
+            isHovered = false;
+            if (SchedulerViewHelper.isMobileLayout(context)) {
+              longPressTimer = Timer(settings.selectionDelay, () {
+                cancelLongPressTimer();
+                if (settings.hapticFeedbackOnLongPressSelection) {
+                    HapticFeedback.selectionClick();
+                }
+                selectAppointment();
+              });
             }
           },
-          onExit: (event) {
-            isHovered = false;
+          onPointerUp: (event) {
+            cancelLongPressTimer();
+            if (!SchedulerViewHelper.isMobileLayout(context)) {
+              selectAppointment();
+            }
           },
-          child: ValueListenableBuilder(
-              valueListenable: hoverNotifier,
-              builder: (BuildContext context, bool hovered, Widget? child) =>
-                  appointmentViewBody(opacity, dragging)),
+          onPointerMove: (event) {
+            if (event.down && event.delta.distanceSquared > 2) {
+              cancelLongPressTimer();
+            }
+          },
+          child: MouseRegion(
+            cursor: DraggableCursor(),
+            opaque: !SchedulerViewHelper.isMobileLayout(context),
+            onEnter: (event) {
+              if (event.kind == PointerDeviceKind.mouse) {
+                isHovered = true;
+              }
+            },
+            onExit: (event) {
+              isHovered = false;
+            },
+            child: ValueListenableBuilder(
+                valueListenable: hoverNotifier,
+                builder: (BuildContext context, bool hovered, Widget? child) =>
+                    appointmentViewBody(opacity, dragging)),
+          ),
         ),
       );
     }

@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.8.0"
+  another_transformer_page_view:
+    dependency: "direct main"
+    description:
+      name: another_transformer_page_view
+      sha256: a7cd46ede62d621c5abe7e58c7cb2745abe67b3bfec64f59b8889c93d7be7a8e
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   ansicolor:
     dependency: transitive
     description:
@@ -125,10 +133,10 @@ packages:
     dependency: "direct main"
     description:
       name: dart_date
-      sha256: "87544823dea637d039e6a232fa45010432d68394cf26e1bb1b1e255eb8f406c3"
+      sha256: "5224a009e23bc3db93e794dad6e4336122d82fc4123122d5bc1753c08ace7d2d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.1"
   dart_style:
     dependency: transitive
     description:
@@ -228,18 +236,10 @@ packages:
     dependency: "direct main"
     description:
       name: list_ext
-      sha256: ec9f6695c1fd55d2bfc7a91b8b67de9a04681c201df8ac06a02e4a9b44418094
+      sha256: a38869a6911830f39ace7534972d01e573e17917955b26215e54d5797eb8d5cd
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.4"
-  loop_page_view:
-    dependency: "direct main"
-    description:
-      name: loop_page_view
-      sha256: "27d7b9d627c36ba6bd3b5e603008474531c7e10e795a4f9cbc0ac396fb5eb972"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.1"
+    version: "1.0.6"
   matcher:
     dependency: transitive
     description:

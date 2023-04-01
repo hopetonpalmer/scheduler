@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:scheduler/widgets/scheduler_grid/grid_row.dart';
 
 class SchedulerGrid extends StatelessWidget {
+  final List<Sizer>? columSizers;
+  final List<Sizer>? rowSizers;
   final int rows;
   final int cols;
-  const SchedulerGrid({Key? key, required this.rows, required this.cols}) : super(key: key);
+  const SchedulerGrid({
+    super.key,
+    this.columSizers,
+    this.rowSizers,
+    required this.rows,
+    required this.cols,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,4 +27,8 @@ class SchedulerGrid extends StatelessWidget {
   }
 }
 
-
+class Sizer {
+  int index;
+  double value;
+  Sizer(this.index, this.value);
+}

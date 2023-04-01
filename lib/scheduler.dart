@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:loop_page_view/loop_page_view.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:scheduler/date_range.dart';
 import 'package:scheduler/draggable_cursor.dart';
@@ -24,6 +23,7 @@ import 'package:scheduler/services/appointment_service.dart';
 import 'package:scheduler/services/scheduler_service.dart';
 import 'package:scheduler/services/view_navigation_service.dart';
 import 'package:scheduler/slot_selector.dart';
+import 'package:scheduler/themes/month_view_theme.dart';
 import 'package:scheduler/time_slot.dart';
 import 'package:scheduler/views/day/day_view_body.dart';
 import 'package:scheduler/views/scheduler_view.dart';
@@ -35,10 +35,11 @@ import 'package:uuid/uuid.dart';
 import 'common/scheduler_view_helper.dart';
 import 'constants.dart';
 import 'scheduler_controller.dart';
+import 'themes/scheduler_theme.dart';
 import 'widgets/long_press_draggable_ex.dart';
-import 'widgets/virtual_page_view.dart';
+import 'widgets/virtual_page_view/virtual_page_view.dart';
 import 'widgets/view_navigator/button_navigation.dart';
-import 'widgets/view_navigator/compact_popup_navigation.dart';
+import 'widgets/view_navigator/popup_navigation_ex.dart';
 import 'widgets/view_navigator/popup_navigation.dart';
 
 part 'views/day/day_view.dart';
@@ -93,12 +94,14 @@ class JzScheduler extends StatefulWidget {
 
 }
 
-class _SchedulerState extends State<JzScheduler> {
+class _SchedulerState extends State<JzScheduler> with TickerProviderStateMixin {
   bool isAutoScale = false;
   late SchedulerController controller;
-
+  late AnimationController viewAnimationController;
+  
   @override
   void initState() {
+    viewAnimationController = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     ViewNavigationService().viewChangeNotify.addListener(() {setState(() {});});
     if (widget.controller != null) {
       controller = widget.controller!;
@@ -112,12 +115,17 @@ class _SchedulerState extends State<JzScheduler> {
   @override
   void dispose(){
     widget.controller!.dispose();
+    viewAnimationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    Scheduler scheduler = Scheduler(scheduler: widget, viewNavigator: widget.viewNavigator, controller: controller);
+    Scheduler scheduler = Scheduler(scheduler: widget,
+        viewNavigator: widget.viewNavigator,
+        controller: controller,
+        viewAnimationController: viewAnimationController,
+    );
     SchedulerService(scheduler: scheduler);
     if (isAutoScale){
       return ResponsiveWrapper.builder(
@@ -148,18 +156,24 @@ class Scheduler extends InheritedWidget {
   final ValueNotifier<double> schedulerScrollPosNotify = ValueNotifier<double>(0);
   final ViewNavigator? viewNavigator;
   final SchedulerController controller;
+  final AnimationController viewAnimationController;
   final String uuid;
   final JzScheduler scheduler;
 
-  Scheduler({Key? key, required this.scheduler, this.viewNavigator, required this.controller})
+  Scheduler({Key? key, 
+    required this.scheduler,
+    this.viewNavigator, 
+    required this.controller,
+    required this.viewAnimationController,
+  })
     : uuid = const Uuid().v4().toString(), super(key: key,
     child: Material(
       child: Column(
         children: [
           viewNavigator ?? const ViewNavigator(),
-            Expanded(
-              child: ViewNavigationService().currentView!,
-            ),
+          Expanded(
+            child: ViewNavigationService().currentView!
+          ),
         ],
       ),
     ),

@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:list_ext/list_ext.dart';
 import 'package:scheduler/date_range.dart';
 import 'package:scheduler/extensions/date_extensions.dart';
 import 'package:scheduler/scheduler.dart';
@@ -11,8 +13,10 @@ import 'package:scheduler/views/day/day_view_interval.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:scheduler/widgets/current_time_indicator.dart';
 import 'package:scheduler/widgets/scroll_aware_stack.dart';
-import 'package:scheduler/widgets/time_cell_block.dart';
+import 'package:scheduler/widgets/time_cell/time_cell_block.dart';
 import 'package:scheduler/widgets/timeslot_cell.dart';
+
+import '../../widgets/time_cell/time_slot_grid.dart';
 
 class DayViewBody extends StatefulWidget {
   final DateTime date;
@@ -50,16 +54,11 @@ class _DayViewBodyState extends State<DayViewBody> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) =>{
-       scrollController.jumpTo(Scheduler.of(context).schedulerScrollPosNotify.value)
+    WidgetsBinding.instance.addPostFrameCallback((_) => {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(Scheduler.of(context).schedulerScrollPosNotify.value)
+      }
     });
-
- /*   SchedulerService().scheduler.dataSource!.visibleDateRange
-        .setRange(widget.date, widget.date.incDays(widget.days, true));
-    SchedulerService().scheduler.controller.addListener(() {
-      SchedulerService().scheduler.dataSource!.visibleDateRange
-          .setRange(SchedulerService().scheduler.controller.startDate, widget.date.incDays(widget.days, true));
-    });*/
   }
 
   @override
@@ -68,22 +67,33 @@ class _DayViewBodyState extends State<DayViewBody> {
   }
 
   @override
+  void didUpdateWidget(covariant DayViewBody oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     timeSlots.clear();
     List<DateTime> dates =
         widget.date.incDates(widget.days, (date, delta) => date.incDays(delta));
+    bool todayInDates = dates.any((x) => x.isToday);
     Scheduler scheduler = Scheduler.of(context);
     SchedulerDataSource dataSource = scheduler.dataSource!;
     double timebarWidth = scheduler.dayViewSettings.timebarWidth;
     double dayWidth = (widget.width - timebarWidth) / widget.days;
-    double activeDayLeft = timebarWidth +
-        (dayWidth *
-            DateTime.now().startOfDay.diffInDays(widget.date.startOfDay));
     double height = widget.intervalCount * widget.intervalHeight;
     Rect calendarRect = Rect.fromLTWH(
         timebarWidth, 0, widget.width - timebarWidth, widget.height);
     double pixelsPerMinute =
         height / scheduler.schedulerSettings.dayDuration.inMinutes;
+
+    double activeDayLeft = min(
+        calendarRect.width + timebarWidth,
+        timebarWidth +
+            (dayWidth *
+                DateTime.now().startOfDay.diffInDays(widget.date.startOfDay)));
+
     var timeSlotSample = TimeSlot(
         widget.date,
         widget.date.incMinutes(widget.interval),
@@ -115,29 +125,30 @@ class _DayViewBodyState extends State<DayViewBody> {
     }
 
     return Stack(
-      //scrollController: scrollController,
       children: [
         NotificationListener<ScrollUpdateNotification>(
           onNotification: (notification) {
-            Scheduler.of(context).notifySchedulerScrollPos(notification.metrics.pixels);
+            Scheduler.of(context)
+                .notifySchedulerScrollPos(notification.metrics.pixels);
             return false;
           },
           child: ListView.builder(
               controller: scrollController,
               physics: const ClampingScrollPhysics(),
-              itemCount: widget.intervalCount, // 24
+              itemCount: 1, //widget.intervalCount,
               itemBuilder: (context, index) {
                 var key = GlobalKey();
-                return Row(key: key, children: buildIntervalTimeSlots(index));
-                return TimeCellBlock(
-                  cellHeaderPosition: HeaderPosition.columnStart,
-                  cellHeaderSize:
-                      Size(SchedulerService().dayViewSettings.timebarWidth, 0),
+                //return Row(key: key, children: buildIntervalTimeSlots(index));
+                return TimeSlotGrid(
+                  headerPosition: HeaderPosition.columnStart,
+                  headerSize: Size(SchedulerService().dayViewSettings.timebarWidth, 0),
                   direction: Axis.vertical,
-                  cellCount: widget.slotsPerHour,
-                  blockDates: dates,
+                  gridDates: dates,
+                  slotsPerTimeBlock: widget.slotsPerHour,
                   cellSize: Size(dayWidth, widget.intervalHeight),
                   intervalType: IntervalType.minute,
+                  colCount: dates.length,
+                  rowCount: widget.intervalCount,
                 );
               }),
         ),
@@ -148,12 +159,13 @@ class _DayViewBodyState extends State<DayViewBody> {
                   scrollController: scrollController,
                   children: [...?renderAppointments()]),
         ),
-        CurrentTimeIndicator(
-            startPos: timebarWidth,
-            activePos: activeDayLeft,
-            activeLength: dayWidth,
-            clientHeight: height,
-            clientWidth: widget.width),
+        if (todayInDates)
+          CurrentTimeIndicator(
+              startPos: timebarWidth,
+              activePos: activeDayLeft,
+              activeLength: dayWidth,
+              clientHeight: height,
+              clientWidth: widget.width),
       ],
     );
   }
@@ -175,8 +187,7 @@ class _DayViewBodyState extends State<DayViewBody> {
         result.add(DayViewInterval(date: date, height: widget.intervalHeight));
       }
       result.add(Expanded(
-        child:
-        TimeslotCell(
+        child: TimeslotCell(
           timeSlot: timeSlot,
           isGroupEnd: intervalIndex % widget.slotsPerHour == 0,
           height: widget.intervalHeight,

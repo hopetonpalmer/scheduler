@@ -180,6 +180,7 @@ class _TimeslotCellState extends State<TimeslotCell> {
     } else if (widget.builder != null){
       //return [widget.headerBuilder!(context, isSelected), Expanded(child: timeSlotsWidget)];
     }
+    //return [Container()];
     // return [Expanded(child: timeSlotsWidget)];
     return [Expanded(child: RepaintBoundary(child:timeSlotsWidget))];
     return [Expanded(child: Stack(children: [timeSlotsWidget, Align(child: Text(widget.startDate.toString()))]))];

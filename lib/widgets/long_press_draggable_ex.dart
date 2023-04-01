@@ -112,8 +112,10 @@ class DelayedPointerState extends MultiDragPointerState {
 
   cancelTimeAndStartDrag() {
     _ensureTimerStopped();
-    _starter!(initialPosition);
-    _starter = null;
+    if (_starter != null) {
+      _starter!(initialPosition);
+      _starter = null;
+    }
   }
 
   @override

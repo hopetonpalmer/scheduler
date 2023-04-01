@@ -42,6 +42,10 @@ extension DateExtension on DateTime {
     return startOfDay == this;
   }
 
+  // bool get isToday {
+  //   return startOfDay == DateTime.now().startOfDay;
+  // }
+
   int get quarter {
     return (month + 2)~/3;
   }
@@ -140,7 +144,7 @@ extension DateExtension on DateTime {
     DateTime startOfWorkWeek = startOfWeek.getNextDay(workWeekStartDay);
     DateTime endOfWorkWeek = startOfWorkWeek.addDays(workDays);
     // If the previous startDayOfWeek is already in the workweek, subtract a week to get to the previous workweek
-    if (endOfWorkWeek < this) {
+    if (endOfWorkWeek.isBefore(this)) {
       startOfWorkWeek = startOfWorkWeek.getNextDay(workWeekStartDay);
     }
     return startOfWorkWeek;
@@ -219,6 +223,7 @@ extension DateExtension on DateTime {
   DateTime incYears(int delta){
     return addYears(delta);
   }
+
 
   String responsiveDayName(String defaultFormat, BuildContext context, bool useDefault) {
     double clientWidth = MediaQuery.of(context).size.width;

@@ -13,11 +13,15 @@ class SchedulerController extends ChangeNotifier {
   Scheduler get scheduler => SchedulerService().scheduler;
   DateRange get visibleDateRange => scheduler.dateRange;
 
+  final ValueNotifier<DateTime> startDateChangeNotify = ValueNotifier<DateTime>(DateTime.now());
+  final ValueNotifier<DateTime> selectedDateChangeNotify = ValueNotifier<DateTime>(DateTime.now());
+
   SchedulerController({DateTime? date}) {
     if (date != null) {
       _startDate = date;
     }
-
+    startDateChangeNotify.value = _startDate;
+    selectedDateChangeNotify.value = _startDate;
   }
 
   DateTime _startDate = DateTime.now();
@@ -27,7 +31,7 @@ class SchedulerController extends ChangeNotifier {
   set startDate(DateTime value) {
     if (_startDate != value) {
       _startDate = value;
-      //scheduler.dataSource.se
+      startDateChangeNotify.value = value;
       notifyListeners();
     }
   }
@@ -53,6 +57,13 @@ class SchedulerController extends ChangeNotifier {
 
   goDate(DateTime date) {
     startDate = intervalConfigProxy.incrementPageDate(date, multiplier: 0);
+  }
+
+  /// Update the start date but only invalidate the navigation view
+  setNavDate(DateTime date) {
+    _startDate = intervalConfigProxy.incrementPageDate(date, multiplier: 0);
+    ViewNavigationService().invalidateNavigation();
+    startDateChangeNotify.value = startDate;
   }
 }
 

@@ -21,11 +21,13 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
     selectView(controller.viewType);
     super.initState();
     controller.addListener(() => mounted ? setState(() {}) : null);
+    ViewNavigationService().addListener(() => mounted ? setState(() {}) : null);
   }
 
   @override
   dispose() {
     controller.removeListener(() {});
+    ViewNavigationService().removeListener(() {});
     super.dispose();
   }
 
@@ -63,7 +65,7 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
                   onPressed: () => controller.goToday(),
                   child: const Text("Today"))),
           Visibility(
-            visible: !SchedulerViewHelper.isMobileLayout(context),
+            visible: !SchedulerViewHelper.isSmallDevice(context),
             child: IconButton(
               iconSize: 20.0,
               icon: const Icon(Icons.arrow_back_ios),
@@ -71,7 +73,7 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
             ),
           ),
           Visibility(
-            visible: !SchedulerViewHelper.isMobileLayout(context),
+            visible: !SchedulerViewHelper.isSmallDevice(context),
             child: IconButton(
               iconSize: 20.0,
               icon: const Icon(Icons.arrow_forward_ios),
@@ -85,15 +87,13 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
                 key: dateSelectionKey),
           ),
           IconButton(
-            iconSize: 20.0,
+            //iconSize: 20.0,
             icon: const Icon(Icons.arrow_drop_down),
             onPressed: () => selectDate(dateSelectionKey),
           ),
         ]),
         if (widget.isDropdown)
-          (SchedulerViewHelper.isMobileLayout(context))
-           ? CompactPopupNavigation(selectView: selectView)
-           : PopupNavigation(selectView: selectView)
+          PopupNavigationEx(selectView: selectView, showSelection: !SchedulerViewHelper.isSmallDevice(context))
         else
           ButtonNavigation(selectView: selectView)
       ]),

@@ -7,7 +7,7 @@ import 'package:scheduler/scheduler.dart';
 import 'scheduler_service.dart';
 
 
-class ViewNavigationService {
+class ViewNavigationService with ChangeNotifier {
   static final ViewNavigationService _viewNavigationService = ViewNavigationService._internal();
   factory ViewNavigationService({CalendarViewType? viewType}) {
     if (viewType != null){
@@ -29,12 +29,13 @@ class ViewNavigationService {
 
   set viewType(CalendarViewType value) {
     if (viewChangeNotify.value != value || currentView == null) {
-      _currentView = AnimatedOpacity(
-          duration: const Duration(seconds: 1),
-          opacity: 1,
-          child: _viewOfViewType(value));
+      _currentView = _viewOfViewType(value);
       viewChangeNotify.value = value;
     }
+  }
+
+  invalidateNavigation() {
+    notifyListeners();
   }
 
   Widget _viewOfViewType(CalendarViewType value) {

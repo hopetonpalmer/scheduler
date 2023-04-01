@@ -35,25 +35,20 @@ class _DayViewState extends State<DayView> with IntervalConfig {
   Widget build(BuildContext context) {
     return Material(
       child: SchedulerView(
-        viewBuilder: (BuildContext context, BoxConstraints constraints) => VirtualPageView(
-          onPageChanged: (virtualIndex, index)=>{
-            if (index == 1) {
-            //  setState(()=>{})
-         /*     scrollController.animateTo(
-                  Scheduler.of(context).schedulerScrollPosNotify.value,
-                  duration: const Duration(milliseconds: 1), curve: Curves.ease
-              )*/
-            }
-          },
-          itemBuilder: (BuildContext context, int index) =>
-          Column(
+        viewBuilder: (BuildContext context, BoxConstraints constraints) => buildVirtualView(constraints)
+      ),
+    );
+  }
+
+  Widget buildView(BoxConstraints constraints) {
+       return Column(
             children: [
               Container(
                 color: schedulerSettings.headerBackgroundColor,
                 child: IntrinsicHeight(
                   child: Row(
                     children: buildDayHeaders(
-                      getStartDate(startDate.incDays(index * widget.days)),
+                      startDate,
                       constraints.maxWidth,
                     ),
                   ),
@@ -62,23 +57,65 @@ class _DayViewState extends State<DayView> with IntervalConfig {
               Expanded(
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) =>
-                   Container(
-                    color: schedulerSettings.backgroundColor,
-                    child: DayViewBody(
-                      key: GlobalKey(),
-                      date: getStartDate(startDate.incDays(index * widget.days)),
-                      days: widget.days,
-                      scrollController: scrollController,
-                      constraints: constraints,
+                      Container(
+                        color: schedulerSettings.backgroundColor,
+                        child: DayViewBody(
+                          date: startDate,
+                          days: widget.days,
+                          scrollController: scrollController,
+                          constraints: constraints,
+                        ),
+                      ),
+                ),
+              ),
+            ],
+          );
+  }
+
+  Widget buildVirtualView(BoxConstraints constraints) {
+    return VirtualPageView(
+      initialDate: startDate,
+      onPageChanged: (index,_) {
+        if (index == 1) {
+          scrollController.animateTo(
+              Scheduler.of(context).schedulerScrollPosNotify.value,
+              duration: const Duration(milliseconds: 1), curve: Curves.easeIn
+          );
+        }
+      },
+      itemBuilder: (BuildContext context, pageDate,_) =>
+          Column(
+            children: [
+              Container(
+                color: schedulerSettings.headerBackgroundColor,
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: buildDayHeaders(
+                      pageDate,
+                      constraints.maxWidth,
                     ),
                   ),
                 ),
               ),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) =>
+                      Container(
+                        color: schedulerSettings.backgroundColor,
+                        child: DayViewBody(
+                          key: GlobalKey(),
+                          date: pageDate,
+                          days: widget.days,
+                          scrollController: scrollController,
+                          constraints: constraints,
+                        ),
+                      ),
+                ),
+              ),
             ],
           ),
-        ),
-      ),
     );
+
   }
 
   List<Widget> buildDayHeaders(DateTime initialDate, double maxWidth) {

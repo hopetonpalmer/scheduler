@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/appointment_drag_service.dart';
 import 'package:scheduler/services/appointment_service.dart';
+import 'package:scheduler/themes/christmas_theme.dart';
+
+import '../themes/scheduler_theme.dart';
 
 
 typedef SchedulerViewBuilder = Widget Function(
@@ -11,7 +14,8 @@ typedef SchedulerViewBuilder = Widget Function(
 
 class SchedulerView extends StatefulWidget {
   final SchedulerViewBuilder viewBuilder;
-  const SchedulerView({Key? key, required this.viewBuilder}) : super(key: key);
+  final Color? backgroundColor;
+  const SchedulerView({Key? key, required this.viewBuilder, this.backgroundColor}) : super(key: key);
 
   @override
   _SchedulerViewState createState() => _SchedulerViewState();
@@ -29,8 +33,8 @@ class _SchedulerViewState extends State<SchedulerView> {
         onKey: handleKeyPress,
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) => Container(
-            color: schedulerSettings.backgroundColor ?? Theme.of(context).colorScheme.background,
-            child: widget.viewBuilder(context, constraints),
+            color: widget.backgroundColor ?? schedulerSettings.getBackgroundColor(context),
+            child: Scaffold(backgroundColor: Colors.transparent, body: widget.viewBuilder(context, constraints)),
           ),
         ),
       ),

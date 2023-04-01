@@ -89,4 +89,8 @@ class SchedulerSettings with Diagnosticable {
   getCellHoverBorderColor(BuildContext context) {
     return cellHoverBorderColor ?? Theme.of(context).colorScheme.primary;
   }
+
+  getBackgroundColor(BuildContext context) {
+    return backgroundColor ?? Theme.of(context).extension<SchedulerTheme>()?.backgroundColor ?? Theme.of(context).colorScheme.background;
+  }
 }

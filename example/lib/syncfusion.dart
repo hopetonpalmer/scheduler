@@ -6,14 +6,16 @@ class Syncfusion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  SfCalendar(view: CalendarView.workWeek, allowViewNavigation: true, timeSlotViewSettings: const TimeSlotViewSettings(
+    return  SfCalendar(view: CalendarView.workWeek, showNavigationArrow: true, showDatePickerButton: true,
+      allowedViews: const [CalendarView.workWeek,CalendarView.day, CalendarView.month, CalendarView.week],
+      allowViewNavigation: true, timeSlotViewSettings: const TimeSlotViewSettings(
         startHour: 0,
         endHour: 24,
         nonWorkingDays: <int>[
           DateTime.saturday,
           DateTime.sunday,
         ],
-        timeInterval: Duration(minutes: 22),
+        timeInterval: Duration(minutes: 15),
         timeIntervalHeight: 40,
         timeFormat: 'h:mm',
         dateFormat: 'd',

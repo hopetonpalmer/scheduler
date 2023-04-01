@@ -18,7 +18,9 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
   Widget build(BuildContext context) {
     schedulerSettings = Scheduler.of(context).schedulerSettings;
     settings = Scheduler.of(context).monthViewSettings;
-    return SchedulerView(viewBuilder: buildMonthView);
+    // ColorScheme colorScheme = Theme.of(context).extension<MonthViewTheme>()?.colorScheme ?? Theme.of(context).colorScheme;
+    Color? backgroundColor = Theme.of(context).extension<MonthViewTheme>()?.backgroundColor ?? schedulerSettings.backgroundColor;
+    return SchedulerView(viewBuilder: buildMonthView, backgroundColor: backgroundColor);
   }
 
   Widget buildMonthView(BuildContext context, BoxConstraints constraints) {
