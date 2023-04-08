@@ -56,10 +56,6 @@ enum IntervalType {
 }
 
 enum IntervalMinute {
-   min1,
-   min2,
-   min3,
-   min4,
    min5,
    min10,
    min15,
@@ -71,10 +67,6 @@ enum IntervalMinute {
 extension IntervalExtension on IntervalMinute {
   int get value {
     switch (this) {
-      case IntervalMinute.min1: return 1;
-      case IntervalMinute.min2: return 2;
-      case IntervalMinute.min3: return 3;
-      case IntervalMinute.min4: return 4;
       case IntervalMinute.min5: return 5;
       case IntervalMinute.min10: return 10;
       case IntervalMinute.min15: return 15;

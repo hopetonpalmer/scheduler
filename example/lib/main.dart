@@ -30,7 +30,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Iterable<ThemeExtension<dynamic>> getThemeExtensions() {
-    return [];
+    return [AppMonthViewTheme()];
   }
 
   @override
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
               locale: 'ja_JP'*/
           ),
           dayViewSettings: const DayViewSettings(
-            intervalMinute: IntervalMinute.min60,
+            intervalMinute: IntervalMinute.min30,
             headerStyleName: 'dayStyle3',
             showMinutes: true,
           ),

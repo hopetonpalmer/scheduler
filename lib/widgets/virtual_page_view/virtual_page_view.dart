@@ -7,7 +7,6 @@ import '../../interval_config.dart';
 import '../../scheduler_scroll_behavior.dart';
 import '../../services/scheduler_service.dart';
 import '../../services/view_navigation_service.dart';
-import 'virtual_page_controller.dart';
 
 class VirtualPageView extends StatefulWidget {
   final Function(int virtualIndex)? afterScroll;
@@ -39,11 +38,23 @@ class _VirtualPageViewState extends State<VirtualPageView> with IntervalConfig{
   void initState() {
     initialPage = (widget.virtualCount / 2).floor();
     _controller = PageController(initialPage: initialPage);
-     super.initState();
+    subscribeToNavServiceScrolling();
+    super.initState();
+  }
+
+  subscribeToNavServiceScrolling() {
+    Duration duration = const Duration(milliseconds: 500);
+    Curve curve = Curves.decelerate;
+    viewNavigationService.scrollNextNotify.addListener(() => {
+      _controller.nextPage(duration: duration, curve: curve)});
+    viewNavigationService.scrollPreviousNotify.addListener(() => {
+      _controller.previousPage(duration: duration, curve: curve)});
   }
 
   @override
   void dispose() {
+    viewNavigationService.scrollPreviousNotify.removeListener(() { });
+    viewNavigationService.scrollNextNotify.removeListener(() { });
     super.dispose();
   }
 
@@ -52,6 +63,7 @@ class _VirtualPageViewState extends State<VirtualPageView> with IntervalConfig{
     DateTime result = incrementPageDate(startDate, multiplier: virtualPageIndex);
     return result;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +74,7 @@ class _VirtualPageViewState extends State<VirtualPageView> with IntervalConfig{
       itemCount: widget.virtualCount,
       controller: _controller,
       onPageChanged: (index) {
+        viewNavigationService.viewPageChanged(index);
         widget.onPageChanged?.call(index - initialPage, index);
         SchedulerService().scheduler.controller.setNavDate(calcPageDate(index));
         initialPage = index;

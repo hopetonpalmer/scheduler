@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -75,7 +77,7 @@ class _DateHeaderState extends State<DateHeader> {
                       color: schedulerSettings.getDividerLineColor(context),
                       width: schedulerSettings.dividerLineWidth))),
           height: widget.height,
-          width: widget.width,
+          width: max(0,widget.width!),
           child: !widget.dateVisible ? null : widget.headerType == DateHeaderType.allDay ? null : widgetOfStyle() ??
                 dateText(format: widget.dateFormat,  circleCurrentDate: widget.circleWhenNow)),
     );

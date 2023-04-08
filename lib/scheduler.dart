@@ -160,6 +160,8 @@ class Scheduler extends InheritedWidget {
   final String uuid;
   final JzScheduler scheduler;
 
+  static double currentScrollPos = 0;
+
   Scheduler({Key? key, 
     required this.scheduler,
     this.viewNavigator, 
@@ -198,11 +200,9 @@ class Scheduler extends InheritedWidget {
     ViewNavigationService().viewType = value;
   }
 
-  void notifySchedulerScrollPos(double value, [ScrollController? syncController]) {
-    if (syncController != null){
-      syncController!.position.jumpTo(value);
-    }
+  void notifySchedulerScrollPos(double value) {
     schedulerScrollPosNotify.value = value;
+    currentScrollPos = value;
   }
 
   static Scheduler of(BuildContext context) {

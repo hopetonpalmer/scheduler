@@ -109,8 +109,10 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
         ValueListenableBuilder(
           valueListenable: dataSource,
           builder: (BuildContext context, value, Widget? child) =>
-              ScrollAwareStack(scrollController: _scrollController,
-              children: [...?renderAppointments()]), ),
+              ScrollAwareStack(
+                  clientConstraints: constraints,
+                  scrollController: _scrollController,
+                  children: [...?renderAppointments()]), ),
       ],
     );
   }

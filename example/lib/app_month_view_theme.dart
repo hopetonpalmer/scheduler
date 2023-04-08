@@ -13,7 +13,7 @@ class AppMonthViewTheme extends MonthViewTheme {
   }
 
   getBackgroundColor() {
-    return const Color.fromARGB(100, 150, 25, 100);
+    return const Color.fromARGB(100, 100, 25, 100);
   }
 
   @override

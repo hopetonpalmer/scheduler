@@ -1,13 +1,13 @@
 import 'package:scheduler/scheduler.dart';
 
 class SchedulerService {
-  static final SchedulerService _schedulerService = SchedulerService._internal();
+  static final SchedulerService instance = SchedulerService._internal();
   Scheduler? _scheduler;
   factory SchedulerService({Scheduler? scheduler}) {
     if (scheduler != null){
-      _schedulerService._scheduler = scheduler;
+      instance._scheduler = scheduler;
     }
-    return _schedulerService;
+    return instance;
   }
   SchedulerService._internal();
 
@@ -18,3 +18,5 @@ class SchedulerService {
   TimelineViewSettings get timelineViewSettings => scheduler.timelineViewSettings;
   AppointmentSettings get appointmentSettings => scheduler.appointmentSettings;
 }
+
+SchedulerService get schedulerService => SchedulerService.instance;

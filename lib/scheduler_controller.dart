@@ -65,6 +65,8 @@ class SchedulerController extends ChangeNotifier {
     ViewNavigationService().invalidateNavigation();
     startDateChangeNotify.value = startDate;
   }
+
+
 }
 
 class IntervalConfigProxy with IntervalConfig {}

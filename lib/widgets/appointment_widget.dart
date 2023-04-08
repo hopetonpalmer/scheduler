@@ -19,12 +19,24 @@ class AppointmentWidget extends StatefulWidget {
   State<AppointmentWidget> createState() => _AppointmentWidgetState();
 }
 
-class _AppointmentWidgetState extends State<AppointmentWidget> {
+class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProviderStateMixin {
   Timer? longPressTimer;
   SlotSelector? slotSelector;
+  final AppointmentSettings settings = SchedulerService().scheduler.appointmentSettings;
+  final Scheduler scheduler = SchedulerService().scheduler;
   final ValueNotifier<bool> hoverNotifier = ValueNotifier<bool>(false);
   final AppointmentService appointmentService = AppointmentService.instance;
   late final StreamSubscription? _appointmentSelectedSubscription;
+
+  late final AnimationController _animationController = AnimationController(
+    duration: settings.animationDuration,
+    vsync: this,
+  );
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _animationController,
+    curve: Curves.easeIn,
+  );
+
 
   bool _isHovered = false;
   Appointment get appointment {
@@ -46,6 +58,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   @override
   initState() {
     super.initState();
+    _animationController.forward();
     _appointmentSelectedSubscription =
         appointmentService.$appointmentSelected.listen((appointment) {
       //if (appointment != widget.appointmentItem.appointment) {
@@ -56,6 +69,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
 
   @override
   dispose() {
+    _animationController.dispose();
     _appointmentSelectedSubscription?.cancel();
     cancelLongPressTimer();
     super.dispose();
@@ -104,9 +118,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   }
 
   Border border(bool isDragging){
-    Scheduler scheduler = Scheduler.of(context);
-    AppointmentSettings settings = scheduler.appointmentSettings;
-
     double width = 1;
     Color color = appointment.color.darken(.25);
     if(isDragging){
@@ -129,9 +140,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
   @override
   Widget build(BuildContext context) {
     const minResponsiveHeight = 50;
-    Scheduler scheduler = Scheduler.of(context);
     slotSelector = scheduler.slotSelector;
-    AppointmentSettings settings = scheduler.appointmentSettings;
     Color color = widget.appointmentItem.appointment.color;
     double height = widget.appointmentItem.geometry.rect.height;
     double width = widget.appointmentItem.geometry.rect.width;
@@ -157,7 +166,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                     style: widget.textStyle ??
                         TextStyle(
                             color: textColor,
-                            fontSize: height >= minResponsiveHeight ? 12.0 : height * .40,
+                            fontSize: height >= minResponsiveHeight ? 12.0 : min(12,height * .40),
                             overflow: TextOverflow.ellipsis)),
               ),
               Visibility(
@@ -231,7 +240,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
         valueListenable: scheduler.schedulerScrollPosNotify,
         builder: (BuildContext context, double scrollBy, Widget? child) {
           widget.appointmentRenderService
-              .scrollAppointment(widget.appointmentItem, scrollBy);
+              .scrollAppointment(widget.appointmentItem, Scheduler.currentScrollPos);
           return Positioned(
             top: widget.appointmentItem.geometry.rect.top,
             left: widget.appointmentItem.geometry.rect.left,
@@ -239,7 +248,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                 ? appointmentView()
                 : LongPressDraggableEx<Appointment>(
                       allowDragGesture: () => false,
-                      delay: settings.dragDelay,
+                      delay: const Duration(), // settings.dragDelay,
                       onDragStarted: () {
                         AppointmentDragService().beginDrag(widget.appointmentItem.appointment);
                       },
@@ -256,7 +265,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                           AppointmentDragService().endDrag(widget.appointmentItem.appointment, dragDetails);
                           if (dragDelta.dx.abs() >= 1 || dragDelta.dy.abs() >= 1) {
                             List newDates = widget.appointmentRenderService.datesOfPosChange(widget.appointmentItem, dragDelta);
-                            Scheduler.of(context).dataSource!.rescheduleAppointment(widget.appointmentItem.appointment,newDates[0],newDates[1]);
+                            scheduler.dataSource!.rescheduleAppointment(widget.appointmentItem.appointment,newDates[0],newDates[1]);
                           }
                         } else {
                           dragDelta = Offset.zero;
@@ -273,7 +282,10 @@ class _AppointmentWidgetState extends State<AppointmentWidget> {
                                   : Material(
                                       color: Colors.transparent,
                                       child: appointmentView(opacity: 0.75, dragging: true))),
-                      child: appointmentView(),
+                      child: FadeTransition(
+                         opacity: _animation,
+                         child: appointmentView()
+                      ),
                     ),
           );
         });

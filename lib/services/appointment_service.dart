@@ -13,7 +13,7 @@ class AppointmentService with ChangeNotifier {
   AppointmentService._internal();
   Appointment? _selectedAppointment;
   get selectedAppointment => _selectedAppointment;
-  get dataSource => SchedulerService().scheduler.dataSource;
+  get dataSource => SchedulerService.instance.scheduler.dataSource;
 
   final _appointmentSelectedSubject = BehaviorSubject<Appointment>();
   ValueStream<Appointment> get $appointmentSelected =>

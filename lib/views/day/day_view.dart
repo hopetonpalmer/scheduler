@@ -14,11 +14,11 @@ class DayView extends StatefulWidget {
 class _DayViewState extends State<DayView> with IntervalConfig {
   late SchedulerSettings schedulerSettings;
   late DayViewSettings dayViewSettings;
-  late ScrollController scrollController;
+  //late ScrollController scrollController;
 
   @override
   void initState() {
-    scrollController = ScrollController();
+    //scrollController = ScrollController();
     intervalMinute = SchedulerService().dayViewSettings.intervalMinute;
     schedulerSettings = SchedulerService().schedulerSettings; // Scheduler.of(context).schedulerSettings;
     dayViewSettings = SchedulerService().dayViewSettings; // Scheduler.of(context).dayViewSettings;
@@ -27,7 +27,7 @@ class _DayViewState extends State<DayView> with IntervalConfig {
 
   @override
   void dispose() {
-    scrollController.dispose();
+    //scrollController.dispose();
     super.dispose();
   }
 
@@ -62,7 +62,6 @@ class _DayViewState extends State<DayView> with IntervalConfig {
                         child: DayViewBody(
                           date: startDate,
                           days: widget.days,
-                          scrollController: scrollController,
                           constraints: constraints,
                         ),
                       ),
@@ -75,14 +74,6 @@ class _DayViewState extends State<DayView> with IntervalConfig {
   Widget buildVirtualView(BoxConstraints constraints) {
     return VirtualPageView(
       initialDate: startDate,
-      onPageChanged: (index,_) {
-        if (index == 1) {
-          scrollController.animateTo(
-              Scheduler.of(context).schedulerScrollPosNotify.value,
-              duration: const Duration(milliseconds: 1), curve: Curves.easeIn
-          );
-        }
-      },
       itemBuilder: (BuildContext context, pageDate,_) =>
           Column(
             children: [
@@ -99,17 +90,18 @@ class _DayViewState extends State<DayView> with IntervalConfig {
               ),
               Expanded(
                 child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) =>
-                      Container(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return Container(
                         color: schedulerSettings.backgroundColor,
                         child: DayViewBody(
                           key: GlobalKey(),
                           date: pageDate,
                           days: widget.days,
-                          scrollController: scrollController,
+                          //scrollController: scrollController,
                           constraints: constraints,
                         ),
-                      ),
+                      );
+                     }
                 ),
               ),
             ],

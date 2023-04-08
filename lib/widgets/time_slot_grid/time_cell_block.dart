@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/scheduler_service.dart';
 import 'package:scheduler/widgets/date_header.dart';
-import 'package:scheduler/widgets/time_cell/time_cell.dart';
+
+import 'time_cell.dart';
 
 class TimeCellBlock extends StatelessWidget {
   final IntervalType intervalType;

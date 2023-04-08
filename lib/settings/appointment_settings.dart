@@ -12,7 +12,7 @@ class AppointmentSettings {
   final Color? selectionBorderColor;
   final Duration dragDelay;
   final Duration selectionDelay;
-  final int animationSpeed;
+  final Duration animationDuration;
   final bool hapticFeedbackOnLongPressSelection;
 
   const AppointmentSettings({
@@ -22,13 +22,13 @@ class AppointmentSettings {
     this.selectionBorderColor, // = Colors.blue,
     this.hoverBorderColor, // const(0xffff9800),
     this.textStyle,
-    this.spaceBetween = 1.5,
+    this.spaceBetween = 1.50,
     this.cornerRadius,
     this.builder,
     this.hapticFeedbackOnLongPressSelection = true,
     this.selectionDelay = kLongPressTimeout,
     this.dragDelay = kLongPressTimeout,
-    this.animationSpeed = 0,
+    this.animationDuration = const Duration(seconds: 1),
   });
 
   getHoverBorderColor(BuildContext context) {

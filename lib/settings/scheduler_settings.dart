@@ -35,6 +35,7 @@ class SchedulerSettings with Diagnosticable {
   final Color? defaultAppointmentColor;
   final int defaultAppointmentDurationMinutes;
   final bool snapToTimeSlot;
+  final bool navigationScroll;
 
   const SchedulerSettings({
     this.locale = 'en_US',
@@ -69,6 +70,7 @@ class SchedulerSettings with Diagnosticable {
     this.currentTimeIndicatorAnimationSpeed = 250,
     this.defaultAppointmentColor = const Color(0xFF939495),
     this.defaultAppointmentDurationMinutes = 30,
+    this.navigationScroll = true,
   }): assert(firstDayOfWeek >= 1 && firstDayOfWeek <= 7);
 
   Duration get dayDuration {
