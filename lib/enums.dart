@@ -1,6 +1,6 @@
 part of scheduler;
 
-
+enum SizingDirection { none, left, right, up, down }
 
 enum ViewPart {
   header,

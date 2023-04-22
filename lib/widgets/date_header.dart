@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../services/scheduler_service.dart';
 import '../services/view_navigation_service.dart';
 import '/extensions/date_extensions.dart';
 import '/scheduler.dart';
@@ -64,10 +65,12 @@ class _DateHeaderState extends State<DateHeader> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
-    schedulerSettings = Scheduler.of(context).schedulerSettings;
+    schedulerSettings = schedulerService.scheduler.schedulerSettings;
     viewType = ViewNavigationService().viewType;
+    var width = widget.width ?? 0;
+    var height = widget.height ?? 0;
     return ValueListenableBuilder(
-      valueListenable: Scheduler.of(context).clockTickNotify,
+      valueListenable: schedulerService.scheduler.clockTickNotify,
       builder: (BuildContext context, value, Widget? child) =>
       Container(
           padding: widget.padding,
@@ -77,7 +80,7 @@ class _DateHeaderState extends State<DateHeader> {
                       color: schedulerSettings.getDividerLineColor(context),
                       width: schedulerSettings.dividerLineWidth))),
           height: widget.height,
-          width: max(0,widget.width!),
+          width: max(0,width),
           child: !widget.dateVisible ? null : widget.headerType == DateHeaderType.allDay ? null : widgetOfStyle() ??
                 dateText(format: widget.dateFormat,  circleCurrentDate: widget.circleWhenNow)),
     );

@@ -80,19 +80,24 @@ class SchedulerSettings with Diagnosticable {
     return Duration(hours: minuteDiff ~/ 60, minutes: minuteDiff.remainder(60));
   }
 
-  getIntervalLineColor(BuildContext context) {
+  Color getIntervalLineColor(BuildContext context) {
     return intervalLineColor ?? Theme.of(context).dividerColor.withOpacity(.25);
   }
 
-  getDividerLineColor(BuildContext context) {
+  Color getDividerLineColor(BuildContext context) {
     return dividerLineColor ?? Theme.of(context).dividerColor.withOpacity(.25);
   }
 
-  getCellHoverBorderColor(BuildContext context) {
+  Color getCellHoverBorderColor(BuildContext context) {
     return cellHoverBorderColor ?? Theme.of(context).colorScheme.primary;
   }
 
-  getBackgroundColor(BuildContext context) {
+  Color getBackgroundColor(BuildContext context) {
     return backgroundColor ?? Theme.of(context).extension<SchedulerTheme>()?.backgroundColor ?? Theme.of(context).colorScheme.background;
   }
+
+  getTimebarFontColor(BuildContext context) {
+    return timebarFontColor ?? Theme.of(context).colorScheme.onBackground;
+  }
+
 }

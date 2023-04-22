@@ -13,8 +13,7 @@ import 'package:scheduler/widgets/current_time_indicator.dart';
 import 'package:scheduler/widgets/scroll_aware_stack.dart';
 import 'package:scheduler/widgets/timeslot_cell.dart';
 
-import '../../widgets/time_slot_grid/time_slot_grid.dart';
-
+import '../../widgets/scheduler_grid/scheduler_grid.dart';
 
 class DayViewBody extends StatefulWidget {
   final DateTime date;
@@ -34,6 +33,7 @@ class DayViewBody extends StatefulWidget {
   int get slotsPerHour => 60 ~/ interval;
   int get intervalCount => slotsPerHour * 24;
   double get intervalHeight => max(schedulerService.dayViewSettings.intervalMinHeight, height / intervalCount).ceilToDouble();
+  double get pixelsPerMinute => intervalHeight / interval;
 
   @override
   _DayViewBodyState createState() => _DayViewBodyState();
@@ -42,16 +42,13 @@ class DayViewBody extends StatefulWidget {
 class _DayViewBodyState extends State<DayViewBody> {
   List<TimeSlot> timeSlots = [];
   AppointmentRenderService? appointmentRenderService;
-  final ScrollController scrollController = ScrollController(initialScrollOffset: Scheduler.currentScrollPos);
+  late final ScrollController scrollController;
 
   @override
   void initState() {
+    //schedulerService.scheduler.initializeSchedulerScrollPos(widget.pixelsPerMinute * DateTime.now().totalMinutes);
+    scrollController = ScrollController(initialScrollOffset: Scheduler.currentScrollPos);
     super.initState();
-   WidgetsBinding.instance.addPostFrameCallback((_) => {
-   /*   if (scrollController.hasClients) {
-        scrollController.jumpTo(Scheduler.currentScrollPos)
-      }*/
-    });
   }
 
   @override
@@ -61,25 +58,18 @@ class _DayViewBodyState extends State<DayViewBody> {
   }
 
   @override
-  void didUpdateWidget(covariant DayViewBody oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
   Widget build(BuildContext context) {
     timeSlots.clear();
-    List<DateTime> dates =
-        widget.date.incDates(widget.days, (date, delta) => date.incDays(delta));
+    List<DateTime> dates = widget.date.incDates(widget.days, (date, delta) => date.incDays(delta));
     bool todayInDates = dates.any((x) => x.isToday);
     Scheduler scheduler = Scheduler.of(context);
     SchedulerDataSource dataSource = scheduler.dataSource!;
-    double timebarWidth = scheduler.dayViewSettings.timebarWidth;
+    double timebarWidth = scheduler.dayViewSettings.timebarFullWidth;
     double dayWidth = (widget.width - timebarWidth) / widget.days;
     double height = widget.intervalCount * widget.intervalHeight;
     Rect calendarRect = Rect.fromLTWH(timebarWidth, 0, widget.width - timebarWidth, widget.height);
     double pixelsPerMinute = height / scheduler.schedulerSettings.dayDuration.inMinutes;
-    double activeDayLeft = min(calendarRect.width + timebarWidth,timebarWidth + (dayWidth *
+    double activeDayLeft = min(calendarRect.width + timebarWidth, timebarWidth + (dayWidth *
                 DateTime.now().startOfDay.diffInDays(widget.date.startOfDay)));
 
     var timeSlotSample = TimeSlot(
@@ -98,16 +88,12 @@ class _DayViewBodyState extends State<DayViewBody> {
         widget.date);
 
     List<Widget>? renderAppointments() {
-      dataSource.visibleDateRange
-          .setRange(widget.date, widget.date.incDays(widget.days, true));
+      dataSource.visibleDateRange.setRange(widget.date, widget.date.incDays(widget.days, true));
       var visibleItems = dataSource.visibleAppointmentItemsByDay;
       for (int i = 0; i < widget.days; i++) {
         DateTime date = widget.date.incDays(i);
-        Rect dayRect =
-            Rect.fromLTWH(timebarWidth + (dayWidth * i), 0, dayWidth, height);
-
-        appointmentRenderService?.measureAppointments(
-            DateRange(date, date), dayRect, visibleItems);
+        Rect dayRect = Rect.fromLTWH(timebarWidth + (dayWidth * i), 0, dayWidth, height);
+        appointmentRenderService?.measureAppointments(DateRange(date, date), dayRect, visibleItems);
       }
       return appointmentRenderService?.renderAppointments(visibleItems);
     }
@@ -117,21 +103,22 @@ class _DayViewBodyState extends State<DayViewBody> {
         NotificationListener<ScrollUpdateNotification>(
           onNotification: (notification) {
             var position = notification.metrics.pixels;
-            Scheduler.of(context).notifySchedulerScrollPos(position);
+            Scheduler.of(context).setSchedulerScrollPos(position);
             return false;
           },
-          child: TimeSlotGrid(
-          clientRect: calendarRect,
-          headerPosition: HeaderPosition.columnStart,
-          headerSize: Size(schedulerService.dayViewSettings.timebarWidth, 0),
-          direction: Axis.vertical,
-          gridDates: dates,
-          slotsPerTimeBlock: widget.slotsPerHour,
-          cellSize: Size(dayWidth, widget.intervalHeight),
-          intervalType: IntervalType.minute,
-          colCount: dates.length,
-          rowCount: widget.intervalCount,
-          scrollController: scrollController,
+          child: SchedulerGrid(
+            clientRect: calendarRect,
+            headerPosition: HeaderPosition.columnStart,
+            rulerCellSize: Size(schedulerService.dayViewSettings.timebarFullWidth,
+                widget.intervalHeight),
+            direction: Axis.vertical,
+            gridDates: dates,
+            slotsPerTimeBlock: widget.slotsPerHour,
+            cellSize: Size(dayWidth, widget.intervalHeight),
+            intervalType: IntervalType.minute,
+            colCount: dates.length,
+            rowCount: widget.intervalCount,
+            scrollController: scrollController,
           ),
         ),
         ValueListenableBuilder(
@@ -165,7 +152,7 @@ class _DayViewBodyState extends State<DayViewBody> {
       TimeSlot timeSlot = TimeSlot(date, endDate, CalendarViewType.day,
           IntervalType.minute, widget.intervalHeight);
       timeSlots.add(timeSlot);
-      //-- time bar interval header (combined to create the timebar ruler)
+      //-- time bar interval header (combined to create the timebar timebar)
       if (i == 0) {
         result.add(DayViewInterval(date: date, height: widget.intervalHeight));
       }

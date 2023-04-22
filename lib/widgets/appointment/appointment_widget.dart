@@ -1,15 +1,18 @@
 part of scheduler;
 
+
+typedef AppointmentViewBuilder = Widget Function({double opacity, bool dragging});
+
 class AppointmentWidget extends StatefulWidget {
   final AppointmentItem appointmentItem;
   final TextStyle? textStyle;
   final Decoration? decoration;
   final AppointmentRenderService appointmentRenderService;
-  final FlowOrientation timeOrientation;
+  final FlowOrientation orientation;
   const AppointmentWidget(
     this.appointmentItem,
     this.appointmentRenderService,
-    this.timeOrientation, {
+    this.orientation, {
     Key? key,
     this.textStyle,
     this.decoration,
@@ -90,7 +93,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     Radius bottomLeft = borderRadius;
     Radius bottomRight = borderRadius;
 
-    if (widget.timeOrientation == FlowOrientation.vertical) {
+    if (widget.orientation == FlowOrientation.vertical) {
       if (widget.appointmentItem != appointment.appointmentItems.last) {
         bottomLeft = const Radius.circular(0);
         bottomRight = const Radius.circular(0);
@@ -144,7 +147,6 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     Color color = widget.appointmentItem.appointment.color;
     double height = widget.appointmentItem.geometry.rect.height;
     double width = widget.appointmentItem.geometry.rect.width;
-    Offset dragDelta = const Offset(0, 0);
     Color textColor = settings.fontColorShadeOfBack ? color.darken(0.45) : settings.fontColor;
 
     Widget appointmentViewBody(double opacity, bool dragging) {
@@ -230,7 +232,14 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
             child: ValueListenableBuilder(
                 valueListenable: hoverNotifier,
                 builder: (BuildContext context, bool hovered, Widget? child) =>
-                    appointmentViewBody(opacity, dragging)),
+                    AppointmentResizer(
+                        hovered: hovered,
+                        orientation: widget.orientation,
+                        height: height,
+                        width: width,
+                        child: appointmentViewBody(opacity, dragging)
+                    )
+            ),
           ),
         ),
       );
@@ -239,54 +248,21 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     return ValueListenableBuilder(
         valueListenable: scheduler.schedulerScrollPosNotify,
         builder: (BuildContext context, double scrollBy, Widget? child) {
-          widget.appointmentRenderService
-              .scrollAppointment(widget.appointmentItem, Scheduler.currentScrollPos);
+          widget.appointmentRenderService.scrollAppointment(widget.appointmentItem, Scheduler.currentScrollPos);
           return Positioned(
             top: widget.appointmentItem.geometry.rect.top,
             left: widget.appointmentItem.geometry.rect.left,
             child: SchedulerViewHelper.isMobileLayout(context)
                 ? appointmentView()
-                : LongPressDraggableEx<Appointment>(
-                      allowDragGesture: () => false,
-                      delay: const Duration(), // settings.dragDelay,
-                      onDragStarted: () {
-                        AppointmentDragService().beginDrag(widget.appointmentItem.appointment);
-                      },
-                      onDragUpdate: (DragUpdateDetails updateDetails) {
-                        AppointmentDragService().updateDrag(
-                            widget.appointmentItem.appointment, updateDetails);
-                        dragDelta = Offset(dragDelta.dx + updateDetails.delta.dx,
-                            dragDelta.dy + updateDetails.delta.dy);
-                      },
-                      onDragEnd: (DraggableDetails dragDetails) {
-                        //if (dragDetails.wasAccepted){
-                        if (AppointmentDragService().isDragging) {
-                          dragDelta = AppointmentDragService().adjustForDragScroll(dragDelta, widget.timeOrientation);
-                          AppointmentDragService().endDrag(widget.appointmentItem.appointment, dragDetails);
-                          if (dragDelta.dx.abs() >= 1 || dragDelta.dy.abs() >= 1) {
-                            List newDates = widget.appointmentRenderService.datesOfPosChange(widget.appointmentItem, dragDelta);
-                            scheduler.dataSource!.rescheduleAppointment(widget.appointmentItem.appointment,newDates[0],newDates[1]);
-                          }
-                        } else {
-                          dragDelta = Offset.zero;
-                        }
-                      },
-                      data: widget.appointmentItem.appointment,
-/*                    childWhenDragging: MouseRegion(
-                          cursor: SystemMouseCursors.grab,
-                          child: appointmentView(dragging: true)),*/
-                      feedback: ValueListenableBuilder(
-                          valueListenable:AppointmentDragService().appointmentDragCancel,
-                          builder: (BuildContext context, bool canceled,Widget? child) => canceled
-                                  ? Container()
-                                  : Material(
-                                      color: Colors.transparent,
-                                      child: appointmentView(opacity: 0.75, dragging: true))),
-                      child: FadeTransition(
-                         opacity: _animation,
-                         child: appointmentView()
-                      ),
-                    ),
+                : AppointmentDragger(
+                    child: FadeTransition(
+                        opacity: _animation,
+                        child: appointmentView()),
+                    orientation: widget.orientation,
+                    viewBuilder: appointmentView,
+                    appointmentRenderService: widget.appointmentRenderService,
+                    appointmentItem: widget.appointmentItem
+            )
           );
         });
   }

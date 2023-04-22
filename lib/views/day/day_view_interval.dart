@@ -17,7 +17,7 @@ class DayViewInterval extends StatelessWidget {
         height: height,
         color: schedulerSettings.timebarBackgroundColor,
         padding: const EdgeInsets.only(right: 5),
-        width: dayViewSettings.timebarWidth,
+        width: dayViewSettings.timebarFullWidth,
         child: !dayViewSettings.showMinutes || !date.isTopOfHour ? null : Text(
             date.isTopOfHour ? date.formatHour : DateFormat('mm').format(date),
             textAlign: TextAlign.right,

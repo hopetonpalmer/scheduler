@@ -27,4 +27,9 @@ class DayViewSettings with Diagnosticable {
     this.allDayCaption = 'all-day',
     this.headerStyleName = 'dayStyle2',
   });
+
+  double get timebarFullWidth {
+    int timezoneCount = 1;
+    return timebarWidth * timezoneCount;
+  }
 }

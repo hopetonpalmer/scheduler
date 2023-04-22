@@ -42,14 +42,17 @@ class ViewNavigationService with ChangeNotifier {
     notifyListeners();
   }
 
-  notifyScrollPrevious() {
+  scrollPrevious() {
     scrollPreviousNotify.notifyListeners();
   }
 
-  notifyScrollNext() {
+  scrollNext() {
     scrollNextNotify.notifyListeners();
   }
 
+  notifyScrollToToDate() {
+    scrollNextNotify.notifyListeners();
+  }
   viewPageChanged(int index){
     pageChangedNotify.value = index;
   }

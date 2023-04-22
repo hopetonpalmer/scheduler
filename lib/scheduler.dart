@@ -28,6 +28,7 @@ import 'package:scheduler/time_slot.dart';
 import 'package:scheduler/views/day/day_view_body.dart';
 import 'package:scheduler/views/scheduler_view.dart';
 import 'package:scheduler/widgets/date_header.dart';
+import 'package:scheduler/widgets/resizeable_widget.dart';
 import 'package:scheduler/widgets/scroll_aware_stack.dart';
 import 'package:scheduler/widgets/timeslot_cell.dart';
 import 'package:uuid/uuid.dart';
@@ -36,6 +37,8 @@ import 'common/scheduler_view_helper.dart';
 import 'constants.dart';
 import 'scheduler_controller.dart';
 import 'themes/scheduler_theme.dart';
+import 'widgets/appointment/appointment_dragger.dart';
+import 'widgets/appointment/appointment_resizer.dart';
 import 'widgets/long_press_draggable_ex.dart';
 import 'widgets/virtual_page_view/virtual_page_view.dart';
 import 'widgets/view_navigator/button_navigation.dart';
@@ -49,7 +52,7 @@ part 'views/timeline/timeline_view.dart';
 part 'enums.dart';
 part 'models/appointment.dart';
 part 'scheduler_data_source.dart';
-part 'widgets/appointment_widget.dart';
+part 'widgets/appointment/appointment_widget.dart';
 part 'settings/month_view_settings.dart';
 part 'settings/day_view_settings.dart';
 part 'settings/timeline_view_settings.dart';
@@ -200,9 +203,17 @@ class Scheduler extends InheritedWidget {
     ViewNavigationService().viewType = value;
   }
 
-  void notifySchedulerScrollPos(double value) {
+  void setSchedulerScrollPos(double value) {
     schedulerScrollPosNotify.value = value;
     currentScrollPos = value;
+  }
+
+  bool _positionInitialized = false;
+  void initializeSchedulerScrollPos(double value) {
+    if (!_positionInitialized) {
+      _positionInitialized = true;
+      setSchedulerScrollPos(value);
+    }
   }
 
   static Scheduler of(BuildContext context) {

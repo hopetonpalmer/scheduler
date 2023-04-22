@@ -88,7 +88,7 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
       children: [
         NotificationListener<ScrollUpdateNotification>(
           onNotification: (notification) {
-            scheduler.notifySchedulerScrollPos(notification.metrics.pixels);
+            scheduler.setSchedulerScrollPos(notification.metrics.pixels);
             return false;
           },
           child: Scrollbar(

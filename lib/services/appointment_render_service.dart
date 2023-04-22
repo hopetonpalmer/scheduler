@@ -116,6 +116,38 @@ class AppointmentRenderService {
     return [newStartDate, newEndDate];
   }
 
+  List<DateTime> datesOfSizeChange(AppointmentItem appointmentItem, Offset delta, SizingDirection changeDirection) {
+     DateTime newStartDate = appointmentItem.appointment.startDate;
+     DateTime newEndDate = appointmentItem.appointment.endDate;
+     int startChange = 0;
+     int endChange = 0;
+
+     switch (changeDirection) {
+       case SizingDirection.left:
+         startChange = delta.dx ~/ pixelsPerMinute;
+         break;
+       case SizingDirection.right:
+         endChange = delta.dx ~/ pixelsPerMinute;
+         break;
+       case SizingDirection.up:
+         startChange = delta.dy ~/ pixelsPerMinute;
+         break;
+       case SizingDirection.down:
+         endChange = delta.dy ~/ pixelsPerMinute;
+         break;
+     }
+
+     newStartDate = newStartDate.addMinutes(startChange);
+     newEndDate = newEndDate.addMinutes(endChange);
+
+     if (SchedulerService().schedulerSettings.snapToTimeSlot) {
+       int timeSlotMins = timeSlotSample.duration.inMinutes.remainder(60);
+       newStartDate = newStartDate.closestMinute(timeSlotMins, before: true);
+       newEndDate = newEndDate.closestMinute(timeSlotMins, before: false);
+     }
+     return [newStartDate, newEndDate];
+  }
+
 
   measureAppointments(DateRange dateRange, Rect workArea, List<AppointmentItem> visibleItems) {
     List<AppointmentItem> appointmentItemsOfDay = visibleItems.where((a) => dateRange.inRange(a.startDate) || dateRange.inRange(a.endDate)).toList();

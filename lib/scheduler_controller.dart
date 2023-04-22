@@ -11,6 +11,7 @@ import 'services/view_navigation_service.dart';
 class SchedulerController extends ChangeNotifier {
   IntervalConfigProxy intervalConfigProxy = IntervalConfigProxy();
   Scheduler get scheduler => SchedulerService().scheduler;
+  SchedulerSettings get schedulerSettings => scheduler.schedulerSettings;
   DateRange get visibleDateRange => scheduler.dateRange;
 
   final ValueNotifier<DateTime> startDateChangeNotify = ValueNotifier<DateTime>(DateTime.now());
@@ -44,10 +45,12 @@ class SchedulerController extends ChangeNotifier {
   }
 
   goNextDate() {
+    schedulerSettings.navigationScroll ? ViewNavigationService().scrollNext() :
     startDate = intervalConfigProxy.incrementPageDate(_startDate);
   }
 
   goPreviousDate() {
+    schedulerSettings.navigationScroll ? ViewNavigationService().scrollPrevious() :
     startDate = intervalConfigProxy.incrementPageDate(_startDate, multiplier: -1);
   }
 

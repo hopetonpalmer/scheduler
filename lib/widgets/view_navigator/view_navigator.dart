@@ -70,7 +70,7 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
             child: IconButton(
               iconSize: 20.0,
               icon: const Icon(Icons.arrow_back_ios),
-              onPressed: () => schedulerSettings.navigationScroll ? ViewNavigationService().notifyScrollPrevious() : controller.goPreviousDate(),
+              onPressed: () => controller.goPreviousDate(),
             ),
           ),
           Visibility(
@@ -78,7 +78,7 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
             child: IconButton(
               iconSize: 20.0,
               icon: const Icon(Icons.arrow_forward_ios),
-              onPressed: () => schedulerSettings.navigationScroll ? ViewNavigationService().notifyScrollNext() : controller.goNextDate(),
+              onPressed: () =>  controller.goNextDate(),
             ),
           ),
           Padding(

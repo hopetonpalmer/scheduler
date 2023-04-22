@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:scheduler/themes/christmas_theme.dart';
 import 'package:scheduler/themes/month_view_theme.dart';
 import 'package:scheduler/themes/scheduler_theme.dart';
+import 'package:scheduler/extensions/color_extensions.dart';
 
 import 'app_month_view_theme.dart';
 import 'app_theme.dart';
@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
         // home: SafeArea(child: jzDayView())
         // home: SafeArea(child: jzWeekView())
         //  home: SafeArea(child: Scheduler(view: TimelineView(pages: 5, calendarType: CalendarType.month, intervalMinute: IntervalMinute.min15)))
-        home: SafeArea(child: JzScheduler(dataSource: getDataSource(), viewType: CalendarViewType.week,
+        home: SafeArea(child: JzScheduler(dataSource: getDataSource(), viewType: CalendarViewType.day,
              schedulerSettings: const SchedulerSettings(
  //           locale: 'Ja_Jp'
 /*            headerBackgroundColor: Colors.white,
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
               locale: 'ja_JP'*/
           ),
           dayViewSettings: const DayViewSettings(
-            intervalMinute: IntervalMinute.min30,
+            intervalMinute: IntervalMinute.min60,
             headerStyleName: 'dayStyle3',
             showMinutes: true,
           ),
@@ -80,17 +80,17 @@ class _MyAppState extends State<MyApp> {
     int year = DateTime.now().year;
     int month = DateTime.now().minute;
     int lastMonth = month -1;
-    
+
     DateTime today = DateTime.now().startOfDay.addHours(9);
-    result.addAppointment(today, const Duration(minutes: 30), "Morning meeting with India", color: Colors.red);
-    result.addAppointment(today.addDays(1), const Duration(minutes: 220), "Breakfast", color: Colors.deepPurple);
-    result.addAppointment(today.addDays(2), const Duration(minutes: 220), "Breakfast", color: Colors.lightGreen);
-    result.addAppointment(today.addHours(4), const Duration(minutes: 220), "Workout", color: Colors.orange);
-    result.addAppointment(today, const Duration(minutes: 80), "test red", color: Colors.red);
-    result.addAppointment(today, const Duration(minutes: 180), "test blue", color: Colors.blue);
-    result.addAppointment(DateTime(year,month,14,3,0), const Duration(minutes: 120), "test 1", color: Colors.green);
-    result.addAppointment(DateTime(year,month,14,2,45), const Duration(minutes: 180), "test 5", color: Colors.blue);
-    result.addAppointment(DateTime(year,month,14,5,15), const Duration(minutes: 80), "test 10", color: Colors.red);
+    result.addAppointment(today, const Duration(minutes: 120), "Morning meeting with India", color: ColorsExt.random);
+    result.addAppointment(today.addDays(1), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
+    result.addAppointment(today.addDays(2), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
+    result.addAppointment(today.addHours(4), const Duration(minutes: 220), "Workout", color: ColorsExt.random);
+    result.addAppointment(today, const Duration(minutes: 80), "test red", color: ColorsExt.random);
+    result.addAppointment(today, const Duration(minutes: 180), "test blue", color: ColorsExt.random);
+    result.addAppointment(DateTime(year,month,14,3,0), const Duration(minutes: 120), "test 1", color: ColorsExt.random);
+    result.addAppointment(DateTime(year,month,14,2,45), const Duration(minutes: 180), "test 5", color: ColorsExt.random);
+    result.addAppointment(DateTime(year,month,14,5,15), const Duration(minutes: 80), "test 10", color: ColorsExt.random);
 
    Color color = Colors.green;
     result.addAppointment(DateTime(year,lastMonth,22,8,45), const Duration(minutes: 120), "g1", color: color);

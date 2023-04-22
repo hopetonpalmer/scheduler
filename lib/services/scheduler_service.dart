@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:scheduler/scheduler.dart';
 
 class SchedulerService {
@@ -17,6 +18,7 @@ class SchedulerService {
   MonthViewSettings get monthViewSettings => scheduler.monthViewSettings;
   TimelineViewSettings get timelineViewSettings => scheduler.timelineViewSettings;
   AppointmentSettings get appointmentSettings => scheduler.appointmentSettings;
+  BuildContext? currentContext;
 }
 
 SchedulerService get schedulerService => SchedulerService.instance;

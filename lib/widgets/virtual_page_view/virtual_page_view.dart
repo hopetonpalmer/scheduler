@@ -1,7 +1,4 @@
-import 'package:another_transformer_page_view/another_transformer_page_view.dart';
-import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:scheduler/extensions/date_extensions.dart';
 
 import '../../interval_config.dart';
 import '../../scheduler_scroll_behavior.dart';
@@ -32,11 +29,13 @@ class VirtualPageView extends StatefulWidget {
 class _VirtualPageViewState extends State<VirtualPageView> with IntervalConfig{
   late PageController _controller;
   int initialPage = 0;
+  int virtualInitialPage = 0;
   int pageOffset = 0;
 
   @override
   void initState() {
     initialPage = (widget.virtualCount / 2).floor();
+    virtualInitialPage = initialPage;
     _controller = PageController(initialPage: initialPage);
     subscribeToNavServiceScrolling();
     super.initState();
@@ -46,9 +45,11 @@ class _VirtualPageViewState extends State<VirtualPageView> with IntervalConfig{
     Duration duration = const Duration(milliseconds: 500);
     Curve curve = Curves.decelerate;
     viewNavigationService.scrollNextNotify.addListener(() => {
-      _controller.nextPage(duration: duration, curve: curve)});
+      if (_controller.positions.isNotEmpty)
+         _controller.nextPage(duration: duration, curve: curve)});
     viewNavigationService.scrollPreviousNotify.addListener(() => {
-      _controller.previousPage(duration: duration, curve: curve)});
+      if (_controller.positions.isNotEmpty)
+         _controller.previousPage(duration: duration, curve: curve)});
   }
 
   @override
@@ -68,15 +69,17 @@ class _VirtualPageViewState extends State<VirtualPageView> with IntervalConfig{
   @override
   Widget build(BuildContext context) {
     return PageView.builder(
+      allowImplicitScrolling: false,
       scrollBehavior: SchedulerScrollBehavior(),
       pageSnapping: true,
       scrollDirection: Axis.horizontal,
       itemCount: widget.virtualCount,
       controller: _controller,
       onPageChanged: (index) {
-        viewNavigationService.viewPageChanged(index);
-        widget.onPageChanged?.call(index - initialPage, index);
-        SchedulerService().scheduler.controller.setNavDate(calcPageDate(index));
+        int virtualPageIndex = index - virtualInitialPage;
+        viewNavigationService.viewPageChanged(virtualPageIndex);
+        widget.onPageChanged?.call(virtualPageIndex, index);
+        schedulerService.scheduler.controller.setNavDate(calcPageDate(index));
         initialPage = index;
       },
       itemBuilder: (context, index) {

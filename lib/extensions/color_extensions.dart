@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-extension ColorExtension on Color {
+extension ColorsExt on Colors {
+  static Color get random {
+    var random = Random();
+    return Color.fromARGB(
+      255,
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
+  }
+}
 
+extension ColorExtension on Color {
 
   Color darken([double amount = .1]) {
     assert(amount >= 0 && amount <= 1);

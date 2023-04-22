@@ -112,7 +112,7 @@ class _DayViewState extends State<DayView> with IntervalConfig {
 
   List<Widget> buildDayHeaders(DateTime initialDate, double maxWidth) {
     List<Widget> result = [];
-    var dayWidth = (maxWidth - dayViewSettings.timebarWidth) / widget.days;
+    var dayWidth = (maxWidth - dayViewSettings.timebarFullWidth) / widget.days;
     //DateTime initialDate = startDate;
     for (int i = 0; i < widget.days; i++) {
       DateTime date = initialDate.incDays(i);
@@ -124,12 +124,12 @@ class _DayViewState extends State<DayView> with IntervalConfig {
             Expanded(
               child: SizedBox(
                 height: dayViewSettings.headerHeight,
-                width: dayViewSettings.timebarWidth,
+                width: dayViewSettings.timebarFullWidth,
               ),
             ),
             SizedBox(
               height: 20,
-              width: dayViewSettings.timebarWidth,
+              width: dayViewSettings.timebarFullWidth,
               child: Visibility(
                 visible: !SchedulerViewHelper.isMobileLayout(context),
                 child: Text(
