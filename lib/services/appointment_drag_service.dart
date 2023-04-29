@@ -49,8 +49,8 @@ class AppointmentDragService{
     _isDragging = true;
   }
 
-  updateDrag(Appointment appointment, DragUpdateDetails dragUpdateDetails) {
-    appointmentDragUpdate.value = AppointmentDragUpdateDetails(appointment, dragUpdateDetails);
+  updateDrag(Appointment appointment, DragUpdateDetails dragUpdateDetails, Offset change) {
+    appointmentDragUpdate.value = AppointmentDragUpdateDetails(appointment, dragUpdateDetails, change);
   }
 
   DateTime? dragTargetDate;
@@ -87,5 +87,6 @@ class AppointmentDragDetails {
 class AppointmentDragUpdateDetails {
   Appointment? appointment;
   DragUpdateDetails? dragUpdateDetails;
-  AppointmentDragUpdateDetails(this.appointment, this.dragUpdateDetails);
+  Offset change;
+  AppointmentDragUpdateDetails(this.appointment, this.dragUpdateDetails, this.change);
 }

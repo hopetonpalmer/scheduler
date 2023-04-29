@@ -1,8 +1,6 @@
 import 'dart:ui';
 
-import 'package:list_ext/list_ext.dart';
 
-import '../../scheduler.dart';
 
 
 class TimeSlotGridService {

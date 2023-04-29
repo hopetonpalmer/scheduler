@@ -28,7 +28,6 @@ import 'package:scheduler/time_slot.dart';
 import 'package:scheduler/views/day/day_view_body.dart';
 import 'package:scheduler/views/scheduler_view.dart';
 import 'package:scheduler/widgets/date_header.dart';
-import 'package:scheduler/widgets/resizeable_widget.dart';
 import 'package:scheduler/widgets/scroll_aware_stack.dart';
 import 'package:scheduler/widgets/timeslot_cell.dart';
 import 'package:uuid/uuid.dart';
@@ -44,6 +43,7 @@ import 'widgets/virtual_page_view/virtual_page_view.dart';
 import 'widgets/view_navigator/button_navigation.dart';
 import 'widgets/view_navigator/popup_navigation_ex.dart';
 import 'widgets/view_navigator/popup_navigation.dart';
+import 'package:resizable_widget/resizable_widget.dart';
 
 part 'views/day/day_view.dart';
 part 'views/week/week_view.dart';

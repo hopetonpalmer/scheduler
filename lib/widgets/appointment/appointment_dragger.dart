@@ -29,59 +29,63 @@ class AppointmentDragger extends StatefulWidget {
 
 class _AppointmentDraggerState extends State<AppointmentDragger> {
   Scheduler scheduler = SchedulerService.instance.scheduler;
+  Offset startingPosition = Offset.zero;
 
   @override
   Widget build(BuildContext context) {
     Offset dragDelta = const Offset(0, 0);
-    return LongPressDraggableEx<Appointment>(
-      allowDragGesture: () => false,
-      delay: const Duration(), // settings.dragDelay,
-      onDragStarted: () {
-        AppointmentDragService().beginDrag(widget.appointmentItem.appointment);
+    return Listener(
+      onPointerDown: (event){
+        startingPosition = event.position;
       },
-      onDragUpdate: (DragUpdateDetails updateDetails) {
-        AppointmentDragService()
-            .updateDrag(widget.appointmentItem.appointment, updateDetails);
-        dragDelta = Offset(dragDelta.dx + updateDetails.delta.dx,
-            dragDelta.dy + updateDetails.delta.dy);
-      },
-      onDragEnd: (DraggableDetails dragDetails) {
-        if (AppointmentDragService().isDragging) {
-          var dragMode = AppointmentDragService.instance.dragMode;
-          RenderBox renderBox = context.findRenderObject() as RenderBox;
-          dragDelta = renderBox.globalToLocal(dragDetails.offset);
-          // AppointmentDragService().adjustForDragScroll(localOffset, widget.orientation);
-          AppointmentDragService().endDrag(widget.appointmentItem.appointment, dragDetails);
-          if (dragDelta.dx.abs() >= 1 || dragDelta.dy.abs() >= 1) {
-            if (dragMode == DragMode.drag){
-              List newDates = widget.appointmentRenderService.datesOfPosChange(widget.appointmentItem, dragDelta);
-              scheduler.dataSource!.rescheduleAppointment(widget.appointmentItem.appointment, newDates[0], newDates[1]);
-            } else {
-              var dragSizeDirection = AppointmentDragService().dragSizeDirection;
-              List newDates = widget.appointmentRenderService.datesOfSizeChange(widget.appointmentItem, dragDelta, dragSizeDirection);
-              scheduler.dataSource!.rescheduleAppointment(widget.appointmentItem.appointment, newDates[0], newDates[1]);
+      child: LongPressDraggableEx<Appointment>(
+        allowDragGesture: () => false,
+        delay: const Duration(), // settings.dragDelay,
+        onDragStarted: () {
+          AppointmentDragService().beginDrag(widget.appointmentItem.appointment);
+        },
+        onDragUpdate: (DragUpdateDetails updateDetails) {
+          dragDelta = Offset(updateDetails.globalPosition.dx - startingPosition.dx , updateDetails.globalPosition.dy - startingPosition.dy);
+          AppointmentDragService().updateDrag(widget.appointmentItem.appointment, updateDetails, dragDelta);
+        },
+        onDragEnd: (DraggableDetails dragDetails) {
+          if (AppointmentDragService().isDragging) {
+            var dragMode = AppointmentDragService.instance.dragMode;
+            RenderBox renderBox = context.findRenderObject() as RenderBox;
+            dragDelta = renderBox.globalToLocal(dragDetails.offset);
+            // AppointmentDragService().adjustForDragScroll(localOffset, widget.orientation);
+            AppointmentDragService().endDrag(widget.appointmentItem.appointment, dragDetails);
+            if (dragDelta.dx.abs() >= 1 || dragDelta.dy.abs() >= 1) {
+              if (dragMode == DragMode.drag){
+                List newDates = widget.appointmentRenderService.datesOfPosChange(widget.appointmentItem, dragDelta);
+                scheduler.dataSource!.rescheduleAppointment(widget.appointmentItem.appointment, newDates[0], newDates[1]);
+              } else {
+                var dragSizeDirection = AppointmentDragService().dragSizeDirection;
+                List newDates = widget.appointmentRenderService.datesOfSizeChange(widget.appointmentItem, dragDelta, dragSizeDirection);
+                scheduler.dataSource!.rescheduleAppointment(widget.appointmentItem.appointment, newDates[0], newDates[1]);
+              }
             }
+          } else {
+            dragDelta = Offset.zero;
           }
-        } else {
-          dragDelta = Offset.zero;
-        }
-      },
-      data: widget.appointmentItem.appointment,
-      childWhenDragging: widget.viewBuilder(dragging: true),
-      feedback: ValueListenableBuilder(
-        valueListenable: AppointmentDragService().dragModeNotifier,
-        builder: (BuildContext context, DragMode mode, Widget? child) => mode == DragMode.size
-            ? Container()
-            : ValueListenableBuilder(
-                valueListenable: AppointmentDragService().appointmentDragCancel,
-                builder: (BuildContext context, bool canceled, Widget? child) => canceled
-                        ? Container()
-                        : Material(
-                            color: Colors.transparent,
-                            child: widget.viewBuilder(
-                                opacity: 0.75, dragging: true))),
+        },
+        data: widget.appointmentItem.appointment,
+        //childWhenDragging: widget.viewBuilder(dragging: true),
+        feedback: ValueListenableBuilder(
+          valueListenable: AppointmentDragService().dragModeNotifier,
+          builder: (BuildContext context, DragMode mode, Widget? child) => mode == DragMode.size
+              ? Container()
+              : ValueListenableBuilder(
+                  valueListenable: AppointmentDragService().appointmentDragCancel,
+                  builder: (BuildContext context, bool canceled, Widget? child) => canceled
+                          ? Container()
+                          : Material(
+                              color: Colors.transparent,
+                              child: widget.viewBuilder(
+                                  opacity: 0.75, dragging: true))),
+        ),
+        child: widget.child,
       ),
-      child: widget.child,
     );
   }
 }

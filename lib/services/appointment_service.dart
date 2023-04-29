@@ -16,8 +16,7 @@ class AppointmentService with ChangeNotifier {
   get dataSource => SchedulerService.instance.scheduler.dataSource;
 
   final _appointmentSelectedSubject = BehaviorSubject<Appointment>();
-  ValueStream<Appointment> get $appointmentSelected =>
-      _appointmentSelectedSubject.stream;
+  ValueStream<Appointment> get $appointmentSelected => _appointmentSelectedSubject.stream;
 
   List<AppointmentItem> getAppointmentItemsByDay(Appointment appointment) {
     List<AppointmentItem> result = [];

@@ -18,6 +18,7 @@ dependencies:
   list_ext: ^1.0.6
   responsive_framework: ^0.2.0
   another_transformer_page_view: ^2.0.1
+  resizable_widget: ^1.0.5
   rxdart:
 
 dev_dependencies:

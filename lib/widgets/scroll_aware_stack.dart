@@ -5,13 +5,17 @@ import 'package:flutter/rendering.dart';
 import 'package:scheduler/services/appointment_drag_service.dart';
 
 import '../common/scheduler_view_helper.dart';
+import '../services/ui_service.dart';
 
 class ScrollAwareStack extends StatelessWidget {
   final List<Widget> children;
   final ScrollController scrollController;
   final Constraints clientConstraints;
   const ScrollAwareStack(
-      {Key? key, required this.children, required this.scrollController, required this.clientConstraints })
+      {Key? key,
+      required this.children,
+      required this.scrollController,
+      required this.clientConstraints})
       : super(key: key);
 
   @override
@@ -22,12 +26,19 @@ class ScrollAwareStack extends StatelessWidget {
       },
       onPointerMove: (event) {
         if (event.down && !SchedulerViewHelper.isMobileLayout(context)) {
-           _scrollPastViewPortWhenNeeded(event);
+          _scrollPastViewPortWhenNeeded(event);
         }
       },
-      child: Stack(
-        children: children,
-      ),
+      child: ValueListenableBuilder(
+          valueListenable: UIService.instance.topMostNotifier,
+          builder: (BuildContext context, Widget? widget, Widget? child) {
+            if (widget != null){
+              children.add(widget);
+            }
+            return Stack(
+              children: children,
+            );
+          }),
     );
   }
 
@@ -39,15 +50,21 @@ class ScrollAwareStack extends StatelessWidget {
     int boundaryOffset = 25;
     double jumpBy = 5;
     double jumpValue = 0;
-    double scrollPos = scrollController.position.axis == Axis.vertical ? event.localPosition.dy : event.localPosition.dx;
-    double localDelta = scrollController.position.axis == Axis.vertical ? event.localDelta.dy : event.localDelta.dx;
+    double scrollPos = scrollController.position.axis == Axis.vertical
+        ? event.localPosition.dy
+        : event.localPosition.dx;
+    double localDelta = scrollController.position.axis == Axis.vertical
+        ? event.localDelta.dy
+        : event.localDelta.dx;
     jumpBy += localDelta;
-    if (scrollPos >= scrollController.position.viewportDimension - boundaryOffset) {
-      jumpValue = min(scrollController.position.maxScrollExtent, scrollController.offset + jumpBy);
+    if (scrollPos >=
+        scrollController.position.viewportDimension - boundaryOffset) {
+      jumpValue = min(scrollController.position.maxScrollExtent,
+          scrollController.offset + jumpBy);
       scrollController.jumpTo(jumpValue);
     }
     if (scrollPos <= boundaryOffset) {
-      jumpValue =  max(0, scrollController.offset - jumpBy);
+      jumpValue = max(0, scrollController.offset - jumpBy);
       scrollController.jumpTo(jumpValue);
     }
   }

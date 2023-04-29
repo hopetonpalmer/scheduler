@@ -1,6 +1,5 @@
 part of scheduler;
 
-
 typedef AppointmentViewBuilder = Widget Function({double opacity, bool dragging});
 
 class AppointmentWidget extends StatefulWidget {
@@ -147,7 +146,9 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     Color color = widget.appointmentItem.appointment.color;
     double height = widget.appointmentItem.geometry.rect.height;
     double width = widget.appointmentItem.geometry.rect.width;
+    Rect appointmentRect = widget.appointmentItem.geometry.rect;
     Color textColor = settings.fontColorShadeOfBack ? color.darken(0.45) : settings.fontColor;
+
 
     Widget appointmentViewBody(double opacity, bool dragging) {
       return Container(
@@ -232,11 +233,11 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
             child: ValueListenableBuilder(
                 valueListenable: hoverNotifier,
                 builder: (BuildContext context, bool hovered, Widget? child) =>
+                    //ResizableWidget(children: [appointmentViewBody(opacity, dragging)])
                     AppointmentResizer(
                         hovered: hovered,
                         orientation: widget.orientation,
-                        height: height,
-                        width: width,
+                        appointmentItem: widget.appointmentItem,
                         child: appointmentViewBody(opacity, dragging)
                     )
             ),

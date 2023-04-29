@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:dart_date/dart_date.dart';
-import 'package:scheduler/themes/christmas_theme.dart';
-import 'package:scheduler/themes/month_view_theme.dart';
-import 'package:scheduler/themes/scheduler_theme.dart';
 import 'package:scheduler/extensions/color_extensions.dart';
 
 import 'app_month_view_theme.dart';
-import 'app_theme.dart';
-import 'syncfusion.dart';
 
 
 
