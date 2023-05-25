@@ -8,7 +8,9 @@ class AppointmentWidget extends StatefulWidget {
   final Decoration? decoration;
   final AppointmentRenderService appointmentRenderService;
   final FlowOrientation orientation;
+  final int index;
   const AppointmentWidget(
+    this.index,
     this.appointmentItem,
     this.appointmentRenderService,
     this.orientation, {
@@ -111,6 +113,7 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
         bottomLeft = const Radius.circular(0);
       }
     }
+
     return BorderRadius.only(
       topLeft: topLeft,
       topRight: topRight,
@@ -122,13 +125,13 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
   Border border(bool isDragging){
     double width = 1;
     Color color = appointment.color.darken(.25);
-    if(isDragging){
-      //color = Colors.greenAccent;
-    } else if (isSelected) {
-      width = 1.5;
-      color = settings.getSelectionBorderColor(context);
-    } else if (isHovered) {
-      color = settings.getHoverBorderColor(context);
+    if(!isDragging){
+      if (isSelected) {
+        width = 1.5;
+        color = settings.getSelectionBorderColor(context);
+      } else if (isHovered) {
+        color = settings.getHoverBorderColor(context);
+      }
     }
 
     return Border.all(width: width, color: color);
@@ -142,11 +145,11 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
   @override
   Widget build(BuildContext context) {
     const minResponsiveHeight = 50;
+    final rect = widget.appointmentItem.geometry.rect;
     slotSelector = scheduler.slotSelector;
     Color color = widget.appointmentItem.appointment.color;
-    double height = widget.appointmentItem.geometry.rect.height;
-    double width = widget.appointmentItem.geometry.rect.width;
-    Rect appointmentRect = widget.appointmentItem.geometry.rect;
+    double height = rect.height;
+    double width = rect.width;
     Color textColor = settings.fontColorShadeOfBack ? color.darken(0.45) : settings.fontColor;
 
 
@@ -170,25 +173,25 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
                         TextStyle(
                             color: textColor,
                             fontSize: height >= minResponsiveHeight ? 12.0 : min(12,height * .40),
-                            overflow: TextOverflow.ellipsis)),
+                            overflow: TextOverflow.ellipsis,),),
               ),
               Visibility(
                 visible: height > minResponsiveHeight,
                 child: ClipRect(
                   child: FittedBox(
                     child: Text(
-                        DateFormat('h:mm a').format(widget.appointmentItem.appointment.startDate) +' - ' +DateFormat('h:mm a')
-                                .format(widget.appointmentItem.appointment.endDate),
+                        '${DateFormat('h:mm a').format(widget.appointmentItem.appointment.startDate)} - ${DateFormat('h:mm a')
+                                .format(widget.appointmentItem.appointment.endDate)}',
                         style: widget.textStyle ??
                             TextStyle(
                                 color: textColor,
                                 fontSize: 12.0,
-                                overflow: TextOverflow.ellipsis)),
+                                overflow: TextOverflow.ellipsis,),),
                   ),
                 ),
               ),
             ],
-          ));
+          ),);
     }
 
     Widget appointmentView({double opacity = 1, bool dragging = false}) {
@@ -233,13 +236,13 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
             child: ValueListenableBuilder(
                 valueListenable: hoverNotifier,
                 builder: (BuildContext context, bool hovered, Widget? child) =>
-                    //ResizableWidget(children: [appointmentViewBody(opacity, dragging)])
                     AppointmentResizer(
                         hovered: hovered,
                         orientation: widget.orientation,
                         appointmentItem: widget.appointmentItem,
-                        child: appointmentViewBody(opacity, dragging)
-                    )
+                        appointmentWidget: widget,
+                        child: appointmentViewBody(opacity, dragging),
+                    ),
             ),
           ),
         ),
@@ -250,21 +253,23 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
         valueListenable: scheduler.schedulerScrollPosNotify,
         builder: (BuildContext context, double scrollBy, Widget? child) {
           widget.appointmentRenderService.scrollAppointment(widget.appointmentItem, Scheduler.currentScrollPos);
+
           return Positioned(
             top: widget.appointmentItem.geometry.rect.top,
             left: widget.appointmentItem.geometry.rect.left,
             child: SchedulerViewHelper.isMobileLayout(context)
                 ? appointmentView()
                 : AppointmentDragger(
-                    child: FadeTransition(
-                        opacity: _animation,
-                        child: appointmentView()),
                     orientation: widget.orientation,
                     viewBuilder: appointmentView,
                     appointmentRenderService: widget.appointmentRenderService,
-                    appointmentItem: widget.appointmentItem
-            )
+                    appointmentItem: widget.appointmentItem,
+                    child: FadeTransition(
+                        opacity: _animation,
+                        child: appointmentView(),),
+            ),
           );
-        });
+        },);
   }
 }
+

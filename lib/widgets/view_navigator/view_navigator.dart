@@ -5,10 +5,10 @@ class ViewNavigator extends StatefulWidget {
   const ViewNavigator({Key? key, this.isDropdown = true}) : super(key: key);
 
   @override
-  _ViewNavigatorState createState() => _ViewNavigatorState();
+  ViewNavigatorState createState() => ViewNavigatorState();
 }
 
-class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
+class ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
   final SchedulerController controller = SchedulerService().scheduler.controller;
   final Scheduler scheduler = SchedulerService().scheduler;
   final SchedulerSettings schedulerSettings = SchedulerService().scheduler.schedulerSettings;
@@ -21,20 +21,18 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
   initState() {
     selectView(controller.viewType);
     super.initState();
-    controller.addListener(() => mounted ? setState(() {}) : null);
-    ViewNavigationService().addListener(() => mounted ? setState(() {}) : null);
+    controller.addListener(() => mounted ? setState(()=>{}) : null);
+    ViewNavigationService().addListener(() => mounted ? setState(()=>{}) : null);
   }
 
   @override
   dispose() {
-    controller.removeListener(() {});
+    controller.removeListener(()=>{});
     ViewNavigationService().removeListener(() {});
     super.dispose();
   }
 
-  selectDate(GlobalKey key) async {
-    RenderBox box = key.currentContext?.findRenderObject() as RenderBox;
-    Offset position = box.localToGlobal(Offset.zero); //this is global position
+  selectDate() async {
     var selectedDate = await showDatePicker(
       context: context,
       initialDatePickerMode: DatePickerMode.day,
@@ -52,6 +50,7 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
   @override
   Widget build(BuildContext context) {
     GlobalKey dateSelectionKey = GlobalKey();
+
     return Container(
       decoration: BoxDecoration(
         border: Border(
@@ -64,7 +63,7 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: TextButton(
                   onPressed: () => controller.goToday(),
-                  child: const Text("Today"))),
+                  child: const Text("Today"),),),
           Visibility(
             visible: !SchedulerViewHelper.isSmallDevice(context),
             child: IconButton(
@@ -85,18 +84,18 @@ class _ViewNavigatorState extends State<ViewNavigator> with IntervalConfig {
             padding: const EdgeInsets.only(left: 15.0),
             child: Text(
                 ViewNavigationService().navigationRangeToString(startDate),
-                key: dateSelectionKey),
+                key: dateSelectionKey,),
           ),
           IconButton(
             //iconSize: 20.0,
             icon: const Icon(Icons.arrow_drop_down),
-            onPressed: () => selectDate(dateSelectionKey),
+            onPressed: () => selectDate(),
           ),
         ]),
         if (widget.isDropdown)
           PopupNavigationEx(selectView: selectView, showSelection: !SchedulerViewHelper.isSmallDevice(context))
         else
-          ButtonNavigation(selectView: selectView)
+          ButtonNavigation(selectView: selectView),
       ]),
     );
   }

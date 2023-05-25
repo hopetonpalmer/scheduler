@@ -10,6 +10,7 @@ class DraggableCursor extends MaterialStateMouseCursor {
     if (AppointmentDragService().isDragging){
       return SystemMouseCursors.move;
     }
+
     return SystemMouseCursors.basic;
   }
 

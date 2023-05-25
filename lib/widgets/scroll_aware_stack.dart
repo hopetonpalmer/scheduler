@@ -11,15 +11,19 @@ class ScrollAwareStack extends StatelessWidget {
   final List<Widget> children;
   final ScrollController scrollController;
   final Constraints clientConstraints;
-  const ScrollAwareStack(
-      {Key? key,
-      required this.children,
-      required this.scrollController,
-      required this.clientConstraints})
-      : super(key: key);
+  ScrollAwareStack({
+    super.key,
+    required this.children,
+    required this.scrollController,
+    required this.clientConstraints,
+  }) {
+    UIService.instance.topMostContainer = this;
+  }
 
   @override
   Widget build(BuildContext context) {
+    UIService.instance.topMostContext = context;
+
     return Listener(
       onPointerDown: (event) {
         _setActiveScrollController();
@@ -30,15 +34,19 @@ class ScrollAwareStack extends StatelessWidget {
         }
       },
       child: ValueListenableBuilder(
-          valueListenable: UIService.instance.topMostNotifier,
-          builder: (BuildContext context, Widget? widget, Widget? child) {
-            if (widget != null){
-              children.add(widget);
-            }
-            return Stack(
-              children: children,
-            );
-          }),
+        valueListenable: UIService.instance.topMostNotifier,
+        builder: (BuildContext context, Widget? widget, Widget? child) {
+          //var widgets = children;
+          if (widget != null) {
+            children.remove(widget);
+            children.add(widget);
+          }
+
+          return Stack(
+            children: children,
+          );
+        },
+      ),
     );
   }
 
@@ -59,8 +67,10 @@ class ScrollAwareStack extends StatelessWidget {
     jumpBy += localDelta;
     if (scrollPos >=
         scrollController.position.viewportDimension - boundaryOffset) {
-      jumpValue = min(scrollController.position.maxScrollExtent,
-          scrollController.offset + jumpBy);
+      jumpValue = min(
+        scrollController.position.maxScrollExtent,
+        scrollController.offset + jumpBy,
+      );
       scrollController.jumpTo(jumpValue);
     }
     if (scrollPos <= boundaryOffset) {

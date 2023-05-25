@@ -1,6 +1,4 @@
-import 'package:dart_date/dart_date.dart';
 import 'package:flutter/foundation.dart';
-import 'package:scheduler/extensions/date_extensions.dart';
 import 'package:scheduler/scheduler.dart';
 
 import 'date_range.dart';

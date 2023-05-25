@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:scheduler/scheduler.dart';
 
+import 'appointment_service.dart';
+
 enum DragMode {
   drag,
   size
@@ -28,22 +30,26 @@ class AppointmentDragService{
 
   prepareDragSize(SizingDirection dragSizeDirection) {
      _dragSizeDirection = dragSizeDirection;
-     if (_dragSizeDirection == SizingDirection.none){
+     if (_dragSizeDirection == SizingDirection.none) {
        dragModeNotifier.value = DragMode.drag;
      } else {
        dragModeNotifier.value = DragMode.size;
      }
   }
 
+  Widget? dragSizeFeedbackContainer;
+  WidgetBuilder? dragSizeFeedbackBuilder;
 
   endDrag(Appointment appointment, DraggableDetails dragDetails) {
      _isDragging = false;
      appointmentDragCancel.value = false;
      appointmentDragEnd.value = AppointmentDragDetails(appointment, dragDetails);
      dragModeNotifier.value = DragMode.drag;
+     AppointmentService.instance.suspendAnimation = false;
   }
 
   beginDrag(Appointment appointment) {
+    AppointmentService.instance.suspendAnimation = true;
     appointmentDragCancel.value = false;
     dragScrollPixelsStart = activeScrollController!.position.pixels;
     _isDragging = true;
@@ -63,19 +69,18 @@ class AppointmentDragService{
     if (timeOrientation == FlowOrientation.vertical) {
       return Offset(dragDelta.dx, dragDelta.dy + dragScrollPixels);
     }
+
     return Offset(dragDelta.dx + dragScrollPixels, dragDelta.dy);
   }
 
   void cancelDrag() {
+    AppointmentService.instance.suspendAnimation = false;
     if (isDragging) {
       _isDragging = false;
       appointmentDragCancel.value = true;
       dragModeNotifier.value = DragMode.drag;
     }
   }
-
-
-
 }
 
 class AppointmentDragDetails {

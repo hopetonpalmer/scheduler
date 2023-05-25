@@ -13,6 +13,7 @@ class _JzStatefulWidgetState extends State<JzStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     schedulerService.currentContext = context;
+
     return Container();
   }
 }

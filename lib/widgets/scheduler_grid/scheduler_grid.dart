@@ -1,10 +1,8 @@
 
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' as intl;
 import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/scheduler_service.dart';
-import '../../common/jz_stateless_widget.dart';
 import 'grid_row.dart';
 import 'timebar/timebar_cell.dart';
 
@@ -54,6 +52,7 @@ class SchedulerGrid extends StatelessWidget {
         itemCount: rowCount,
         itemBuilder: (context, index) {
           final intervalDate = gridDates[0].addMinutes((60 ~/ slotsPerTimeBlock) * index);
+
           return Stack(children: [
             Visibility(
               visible: false,
@@ -68,13 +67,13 @@ class SchedulerGrid extends StatelessWidget {
                     intervalDate: intervalDate,
                     rowIndex: index,
                     colCount: colCount,
-                    cellSize: cellSize),
+                    cellSize: cellSize,),
               ),
             ),
             GridRow(rulerCells: rulerCells(index, intervalDate), intervalBlockSize: slotsPerTimeBlock,
                 cellCount: gridDates.length, cellSize: cellSize, rowIndex: index),
           ]);
-        });
+        },);
   }
 }
 

@@ -40,10 +40,10 @@ class _PopupNavigationState extends State<PopupNavigation> {
           }).toList(),
           onChanged: (String? value) {
             selectedDropdown = value!;
-            var index = kViewCaptions.indexOf(value!);
+            var index = kViewCaptions.indexOf(value);
             widget.selectView(kViewTypes[index]);
-            setState(() {});
-          }),
+            setState(()=>{});
+          },),
     );
   }
 }

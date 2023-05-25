@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:scheduler/scheduler.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+// ignore: depend_on_referenced_packages
 import 'package:dart_date/dart_date.dart';
+import 'package:flutter/material.dart';
+
 import 'package:scheduler/extensions/color_extensions.dart';
+import 'package:scheduler/scheduler.dart';
 
 import 'app_month_view_theme.dart';
-
-
-
 
 Future<void> main() async {
   //debugRepaintRainbowEnabled = true;
@@ -31,16 +29,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        useInheritedMediaQuery: true,
         // locale: DevicePreview.locale(context),
         // builder: DevicePreview.appBuilder,
         theme: ThemeData.dark(useMaterial3: true).copyWith(extensions: getThemeExtensions()),
         //darkTheme: ThemeData.dark(),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
+
       debugShowCheckedModeBanner: false,
       title: 'Jazmine Scheduler Demo',
 

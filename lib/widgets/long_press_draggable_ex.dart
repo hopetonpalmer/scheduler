@@ -25,7 +25,7 @@ class LongPressDraggableEx<T extends Object> extends LongPressDraggable<T> {
     super.ignoringFeedbackSemantics,
     super.ignoringFeedbackPointer,
     super.delay = kLongPressTimeout,
-    this.allowDragGesture
+    this.allowDragGesture,
   });
 
   @override
@@ -36,6 +36,7 @@ class LongPressDraggableEx<T extends Object> extends LongPressDraggable<T> {
         if (result != null && hapticFeedbackOnStart) {
           HapticFeedback.selectionClick();
         }
+
         return result;
       };
   }
@@ -54,8 +55,7 @@ class DelayedMultiDragGestureRecognizerEx extends DelayedMultiDragGestureRecogni
 
 class DelayedPointerState extends MultiDragPointerState {
   final bool ignoreDelayOnMove;
-  DelayedPointerState(super.initialPosition, Duration delay, this.ignoreDelayOnMove,  super.kind, super.deviceGestureSettings)
-      : assert(delay != null) {
+  DelayedPointerState(super.initialPosition, Duration delay, this.ignoreDelayOnMove,  super.kind, super.deviceGestureSettings) {
     _timer = Timer(delay, _delayPassed);
   }
 
@@ -95,12 +95,14 @@ class DelayedPointerState extends MultiDragPointerState {
   void checkForResolutionAfterMove() {
     if (_timer == null) {
       assert(_starter != null);
+
       return;
     }
     assert(pendingDelta != null);
 
     if (ignoreDelayOnMove && _timer != null) {
       cancelTimeAndStartDrag();
+
       return;
     }
 

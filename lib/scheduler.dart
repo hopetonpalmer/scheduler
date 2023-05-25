@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:responsive_framework/responsive_wrapper.dart';
+//import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:scheduler/date_range.dart';
 import 'package:scheduler/draggable_cursor.dart';
 import 'package:scheduler/extensions/color_extensions.dart';
@@ -38,12 +38,9 @@ import 'scheduler_controller.dart';
 import 'themes/scheduler_theme.dart';
 import 'widgets/appointment/appointment_dragger.dart';
 import 'widgets/appointment/appointment_resizer.dart';
-import 'widgets/long_press_draggable_ex.dart';
 import 'widgets/virtual_page_view/virtual_page_view.dart';
 import 'widgets/view_navigator/button_navigation.dart';
 import 'widgets/view_navigator/popup_navigation_ex.dart';
-import 'widgets/view_navigator/popup_navigation.dart';
-import 'package:resizable_widget/resizable_widget.dart';
 
 part 'views/day/day_view.dart';
 part 'views/week/week_view.dart';
@@ -105,13 +102,9 @@ class _SchedulerState extends State<JzScheduler> with TickerProviderStateMixin {
   @override
   void initState() {
     viewAnimationController = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
-    ViewNavigationService().viewChangeNotify.addListener(() {setState(() {});});
-    if (widget.controller != null) {
-      controller = widget.controller!;
-    } else {
-      controller = SchedulerController(date: widget.initialDate);
-    }
-    controller.addListener(() {setState(() {});});
+    ViewNavigationService().viewChangeNotify.addListener(() {setState(()=>{});});
+    controller = widget.controller != null ? widget.controller! : SchedulerController(date: widget.initialDate);
+    controller.addListener(() {setState(()=>{});});
     super.initState();
   }
 
@@ -130,7 +123,7 @@ class _SchedulerState extends State<JzScheduler> with TickerProviderStateMixin {
         viewAnimationController: viewAnimationController,
     );
     SchedulerService(scheduler: scheduler);
-    if (isAutoScale){
+  /*  if (isAutoScale){
       return ResponsiveWrapper.builder(
         scheduler,
         minWidth: 450,
@@ -143,7 +136,8 @@ class _SchedulerState extends State<JzScheduler> with TickerProviderStateMixin {
           const ResponsiveBreakpoint.autoScale(2460, name: "4K"),
         ],
       );
-    }
+    }*/
+
     return scheduler;
   }
 
@@ -177,7 +171,7 @@ class Scheduler extends InheritedWidget {
         children: [
           viewNavigator ?? const ViewNavigator(),
           Expanded(
-            child: ViewNavigationService().currentView!
+            child: ViewNavigationService().currentView!,
           ),
         ],
       ),

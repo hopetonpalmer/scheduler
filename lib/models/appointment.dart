@@ -1,7 +1,7 @@
 part of scheduler;
 
 typedef AppointmentItemGenerator = List<AppointmentItem> Function(
-    Appointment appointment, DateTime startDate, DateTime endDate);
+    Appointment appointment, DateTime startDate, DateTime endDate,);
 
 class Appointment {
   late DateTime _startDate;
@@ -23,7 +23,7 @@ class Appointment {
     DateTime startDate,
     DateTime endDate,
     this.subject,
-    {this.color = Colors.grey }
+    {this.color = Colors.grey, }
   ){
     setDates(startDate, endDate);
   }
@@ -33,9 +33,11 @@ class Appointment {
   }
 
   setDates(DateTime start, DateTime end) {
-    _startDate = start;
-    _endDate = end;
-    _generateAppointmentItems();
+    if (start.isBefore(end)) {
+      _startDate = start;
+      _endDate = end;
+      _generateAppointmentItems();
+    }
   }
 
   _generateAppointmentItems() {

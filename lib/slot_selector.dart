@@ -1,10 +1,8 @@
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/foundation.dart';
 import 'package:scheduler/date_range.dart';
-import 'package:scheduler/services/scheduler_service.dart';
 import 'package:scheduler/time_slot.dart';
 
-import 'common/scheduler_view_helper.dart';
 
 class SlotSelector extends ChangeNotifier {
    DateRange selectedSlotDates = DateRange();

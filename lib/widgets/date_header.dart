@@ -50,7 +50,7 @@ class DateHeader extends StatefulWidget {
       this.isFirstInSeries = false,
       this.dateVisible = true,
       this.textAlign = TextAlign.center,
-      this.showDivider = false})
+      this.showDivider = false,})
       : super(key: key);
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_date/dart_date.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
@@ -17,6 +19,17 @@ class AppointmentService with ChangeNotifier {
 
   final _appointmentSelectedSubject = BehaviorSubject<Appointment>();
   ValueStream<Appointment> get $appointmentSelected => _appointmentSelectedSubject.stream;
+
+  bool _suspendAnimation = false;
+  bool get suspendAnimation => _suspendAnimation;
+
+  set suspendAnimation(bool value) {
+    if (value) {
+      _suspendAnimation = value;
+      return;
+    }
+    Timer(const Duration(seconds:1), ()=>{ _suspendAnimation = false} );
+  }
 
   List<AppointmentItem> getAppointmentItemsByDay(Appointment appointment) {
     List<AppointmentItem> result = [];

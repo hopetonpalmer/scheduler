@@ -8,6 +8,7 @@ class JzStatelessWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     schedulerService.currentContext = context;
+
     return Container();
   }
 }

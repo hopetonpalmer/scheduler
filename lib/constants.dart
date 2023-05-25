@@ -29,7 +29,7 @@ const kViewTypes = <CalendarViewType>[
   CalendarViewType.timelineMonth,
   CalendarViewType.quarter,
   CalendarViewType.year,
-  CalendarViewType.agenda
+  CalendarViewType.agenda,
 ];
 
 const kViewCaptions = <String>[
@@ -43,5 +43,5 @@ const kViewCaptions = <String>[
   kViewTimelineMonthCaption,
   kViewTimelineQuarterCaption,
   kViewYearCaption,
-  kViewAgendaCaption
+  kViewAgendaCaption,
 ];

@@ -11,6 +11,7 @@ class SchedulerViewHelper {
       return false;
     }
     var platform = Theme.of(context).platform;
+
     return platform == TargetPlatform.iOS || platform == TargetPlatform.android;
   }
 
@@ -29,6 +30,7 @@ class SchedulerViewHelper {
 
   static bool isMediumDevice(BuildContext context){
     var width = MediaQuery.of(context).size.width;
+
     return  width > kSmallDevice && width <= kMediumDevice;
   }
 

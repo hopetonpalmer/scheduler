@@ -22,6 +22,7 @@ class SchedulerDataSource extends ChangeNotifier implements ValueListenable<List
     if (visibleDateRange.isEmpty) {
       return appointments;
     }
+
     return appointments.where((a) => visibleDateRange.inRange(a.startDate) ||
         visibleDateRange.inRange(a.endDate)).toList();
   }
@@ -30,12 +31,15 @@ class SchedulerDataSource extends ChangeNotifier implements ValueListenable<List
     if (visibleDateRange.isEmpty){
       return visibleAppointments.fold<List<AppointmentItem>>([], (appointmentItems, appointment) {
         appointmentItems.addAll(appointment.appointmentItems);
+
         return appointmentItems;
       });
     }
+
     return visibleAppointments.fold<List<AppointmentItem>>([], (appointmentItems, appointment) {
       appointmentItems.addAll(appointment.appointmentItems.where((a) => visibleDateRange.inRange(a.startDate) ||
           visibleDateRange.inRange(a.endDate)));
+
       return appointmentItems;
     });
   }
@@ -56,12 +60,15 @@ class SchedulerDataSource extends ChangeNotifier implements ValueListenable<List
     if (visibleDateRange.isEmpty){
       return visibleAppointments.fold<List<AppointmentItem>>([], (appointmentItems, appointment) {
         appointmentItems.addAll(getItems(appointment));
+
         return appointmentItems;
       });
     }
+
     return visibleAppointments.fold<List<AppointmentItem>>([], (appointmentItems, appointment) {
       appointmentItems.addAll(getItems(appointment).where((a) => visibleDateRange.inRange(a.startDate) ||
           visibleDateRange.inRange(a.endDate)));
+
       return appointmentItems;
     });
   }

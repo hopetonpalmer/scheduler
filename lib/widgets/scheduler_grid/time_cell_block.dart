@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/scheduler_service.dart';
-import 'package:scheduler/widgets/date_header.dart';
 
 import 'time_cell.dart';
 
@@ -29,6 +28,7 @@ class TimeCellBlock extends StatelessWidget {
     final schedulerSettings = SchedulerService().schedulerSettings;
     final lineColor = schedulerSettings.getIntervalLineColor(context);
     final lineWidth = schedulerSettings.dividerLineWidth;
+   
     return SizedBox(
       //width: (cellSize.width * blockDates.length) + cellHeaderSize.width,
       height: cellSize.height * cellCount,
@@ -76,13 +76,14 @@ class TimeCellBlock extends StatelessWidget {
                 left: BorderSide(
           color: Colors.orange,
           width: 0.5,
-        ))), //todo: set to settings dividerWidth
+        ),),), //todo: set to settings dividerWidth
         child: Flex(
           direction: direction,
           children: dateCells,
         ),
       ));
     }
+
     return Row(
       children: blockCells,
     );
@@ -102,7 +103,7 @@ class CellBlockPainter extends CustomPainter {
     required this.cellSize,
     required this.headerSize,
     required this.lineColor,
-    required this.lineWidth
+    required this.lineWidth,
   });
 
   void drawDashLine(Canvas canvas, Size size, double top, double left) {

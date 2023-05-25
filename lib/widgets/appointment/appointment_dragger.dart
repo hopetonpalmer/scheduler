@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../draggable_cursor.dart';
 import '../../models/appointment_item.dart';
 import '../../scheduler.dart';
 import '../../services/appointment_drag_service.dart';
@@ -34,6 +33,7 @@ class _AppointmentDraggerState extends State<AppointmentDragger> {
   @override
   Widget build(BuildContext context) {
     Offset dragDelta = const Offset(0, 0);
+    
     return Listener(
       onPointerDown: (event){
         startingPosition = event.position;
@@ -82,7 +82,7 @@ class _AppointmentDraggerState extends State<AppointmentDragger> {
                           : Material(
                               color: Colors.transparent,
                               child: widget.viewBuilder(
-                                  opacity: 0.75, dragging: true))),
+                                  opacity: 0.75, dragging: true,),),),
         ),
         child: widget.child,
       ),

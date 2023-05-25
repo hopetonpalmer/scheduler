@@ -4,10 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:scheduler/scheduler.dart';
 import 'package:scheduler/services/appointment_drag_service.dart';
 import 'package:scheduler/services/appointment_service.dart';
-import 'package:scheduler/themes/christmas_theme.dart';
-
-import '../themes/scheduler_theme.dart';
-
 
 typedef SchedulerViewBuilder = Widget Function(
     BuildContext context, BoxConstraints constraints);

@@ -52,6 +52,7 @@ extension DateExtension on DateTime {
 
   double get totalMinutes {
     double result = hour * 60 + minute + second / 60;
+
     return result;
   }
 
@@ -97,7 +98,7 @@ extension DateExtension on DateTime {
 
   Duration duration(DateTime later) => Duration(
     days: later.differenceInDays(startOfDay),
-    minutes: later.totalMinutes.toInt() - totalMinutes.toInt());
+    minutes: later.totalMinutes.toInt() - totalMinutes.toInt(),);
 
   DateTime closestMinute(int minuteInterval, {bool before = false}) {
      if (minute == 0) {
@@ -116,6 +117,7 @@ extension DateExtension on DateTime {
      if (before && result.isAfter(this)) {
        result = result.incMinutes(-minuteInterval);
      }
+
      return result;
   }
 
@@ -126,14 +128,16 @@ extension DateExtension on DateTime {
        if (weekday == date.startOfWeek.weekday) {
          return this;
        }
+
        return date.startOfWeek;
      }
+
      return date.startOfWeek.incDays(weekStartDay); // getPreviousDay(weekStartDay);
   }
 
   DateTime getStartOfWorkWeeks(int weekStartDay, int workWeekStartDay){
-
     var date = getStartOfWeek(weekStartDay);
+
     return date.getNextDay(workWeekStartDay);
   }
 
@@ -147,6 +151,7 @@ extension DateExtension on DateTime {
     if (endOfWorkWeek.isBefore(this)) {
       startOfWorkWeek = startOfWorkWeek.getNextDay(workWeekStartDay);
     }
+
     return startOfWorkWeek;
   }
 
@@ -158,6 +163,7 @@ extension DateExtension on DateTime {
         break;
       }
     }
+
     return date;
   }
 
@@ -166,6 +172,7 @@ extension DateExtension on DateTime {
      while (result.weekday != dayNumber) {
         result = result.incDays(-1);
      }
+
      return result;
   }
 
@@ -174,6 +181,7 @@ extension DateExtension on DateTime {
     if (endsSameDayOnLastDay) {
       result = result.subMilliseconds(1);
     }
+
     return result;
   }
 
@@ -187,6 +195,7 @@ extension DateExtension on DateTime {
      if (diff != delta) {
         result = DateTime.utc(year, month, day, hour, minute + delta, second, millisecond, microsecond);
      }
+
      return result;
   }
 
@@ -194,6 +203,7 @@ extension DateExtension on DateTime {
     var date1 = DateTime.utc(year, month, day, hour, minute, second, millisecond, microsecond);
     var date2 = DateTime.utc(other.year, other.month, other.day, other.hour, other.minute, other.second, other.millisecond, other.microsecond);
     var result = date1.differenceInDays(date2);
+
     return result;
   }
 
@@ -201,6 +211,7 @@ extension DateExtension on DateTime {
     var date1 = DateTime.utc(year, month, day, hour, minute, second, millisecond, microsecond);
     var date2 = DateTime.utc(other.year, other.month, other.day, other.hour, other.minute, other.second, other.millisecond, other.microsecond);
     var result = date1.difference(date2);
+
     return result;
   }
 
@@ -209,6 +220,7 @@ extension DateExtension on DateTime {
     if (timeZoneOffset != result.timeZoneOffset) {
       result = result.add(timeZoneOffset - result.timeZoneOffset);
     }
+
     return result;
   }
 
@@ -235,6 +247,7 @@ extension DateExtension on DateTime {
         format = "EEE";
       }
     }
+
     return DateFormat(format).format(this);
   }
 
@@ -243,6 +256,7 @@ extension DateExtension on DateTime {
     for (int i = 0; i < count; i++) {
       result.add(incDate(this, i));
     }
+
     return result;
   }
 }

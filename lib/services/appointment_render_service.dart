@@ -47,6 +47,7 @@ class AppointmentRenderService {
     if (fixedPosition == AnchorPosition.top) {
       return item.startDate.totalMinutes;
     }
+
     return item.startDate.differenceInMinutes(startDate).toDouble();
   }
 
@@ -113,6 +114,7 @@ class AppointmentRenderService {
       newStartDate = newStartDate.closestMinute(timeSlotMins, before: true);
     }
     DateTime newEndDate = newStartDate.add(appointmentItem.appointment.duration);
+
     return [newStartDate, newEndDate];
   }
 
@@ -135,6 +137,9 @@ class AppointmentRenderService {
        case SizingDirection.down:
          endChange = delta.dy ~/ pixelsPerMinute;
          break;
+       case SizingDirection.none:
+         // TODO: Handle this case.
+         break;
      }
 
      newStartDate = newStartDate.addMinutes(startChange);
@@ -145,6 +150,7 @@ class AppointmentRenderService {
        newStartDate = newStartDate.closestMinute(timeSlotMins, before: true);
        newEndDate = newEndDate.closestMinute(timeSlotMins, before: false);
      }
+
      return [newStartDate, newEndDate];
   }
 
@@ -171,6 +177,7 @@ class AppointmentRenderService {
     spreadAppointments(appointmentItemsOfDay, workArea);
     //ensureMinWidth(appointmentItemsOfDay, workArea);
 
+    //fitRectangles(workArea, appointmentItemsOfDay);
 
     //-- Reset the top or left of the geometry to fix the overlaps.
     //-- All overlaps are usually resolved in 1 pass, but multiple passes are
@@ -193,25 +200,32 @@ class AppointmentRenderService {
     if (!fixedSize){
       double maxRight = workArea.right - gutterSize;
       //fixMarginOverflows(appointmentItemsOfDay, maxRight, workArea);
-      fixGaps(appointmentItemsOfDay, maxRight, workArea);
+      fixGaps(appointmentItemsOfDay, maxRight);
+    }
+  }
+
+  void fitRectangles(Rect clientRect, List<AppointmentItem> items) {
+    items.sort((a, b) => a.geometry.rect.top.compareTo(b.geometry.rect.top));
+    List<Rect> rects = items.map((item) => item.geometry.rect).toList();
+    for (int i = 0; i < rects.length; i++) {
+      int overlappingRectsCount = 1;  // include self
+      for (int j = i + 1; j < rects.length; j++) {
+        if (rects[j].top < rects[i].top + rects[i].height) {
+          overlappingRectsCount++;
+        } else {
+          break;
+        }
+      }
+      double width = clientRect.width / overlappingRectsCount;
+      Size size = items[i].geometry.size;
+      items[i].geometry.size = Size(width, size.height);
     }
   }
 
 
-  void fixGaps(List<AppointmentItem> appointmentItems, double maxRight, Rect dayRect) {
+  void fixGaps(List<AppointmentItem> appointmentItems, double maxRight) {
     for (AppointmentItem apptItem in appointmentItems) {
       Rect rect = apptItem.geometry.rect;
-
-      //-- fill gaps on left if any
-      /*  Rect rectToLeft = Rect.fromLTWH(dayRect.left, rect.top, rect.left, rect.height);
-      List<AppointmentItem> apptsToLeft = overlapped(apptItem, appointmentItems, rect: rectToLeft);
-      apptsToLeft.sort((a, b) => a.geometry.left.compareTo(b.geometry.left));
-      if (apptsToLeft.isNotEmpty) {
-        double left = apptsToLeft.last.geometry.rect.right + margin;
-        apptItem.geometry.left = left;
-      }*/
-
-      //-- fill gaps on right if any
       Rect rectToRight = Rect.fromLTWH(rect.left, rect.top, maxRight-rect.left, rect.height);
       List<AppointmentItem> apptsToRight = overlapped(apptItem, appointmentItems, rect: rectToRight);
       apptsToRight.sort((a, b) => a.geometry.left.compareTo(b.geometry.left));
@@ -220,7 +234,6 @@ class AppointmentRenderService {
 
       double width = rightPos-apptItem.geometry.left;
       if (width < rect.width) {
-        //repositionOverlaps(appt, appointments);
         if (hasRightAppts) {
           apptsToRight.first.geometry.left = apptItem.geometry.rect.right + margin;
         }
@@ -301,6 +314,7 @@ class AppointmentRenderService {
           appointmentItem.geometry.top = appt.geometry.rect.bottom + margin;
         }
         repositionFixedOverlaps(appointmentItem, appointmentItems);
+
         return;
       }
     }
@@ -327,6 +341,7 @@ class AppointmentRenderService {
         break;
       }
     }
+
     return result;
   }
 
@@ -336,6 +351,7 @@ class AppointmentRenderService {
     if (result.isNotEmpty && inclusive) {
       result.insert(0, appointmentItem);
     }
+
     return result;
   }
 
@@ -368,11 +384,12 @@ class AppointmentRenderService {
     }
   }
 
-  spreadAppointment(AppointmentItem appointmentItem, List<AppointmentItem> appointmentItems, SpreadManager spreadManager) {
+  spreadAppointment(AppointmentItem appointmentItem, List<AppointmentItem> appointmentItems) {
     int spreadCount = appointmentItems.fold(1, (value, item) {
       if (item != appointmentItem && item.geometry.rect.overlaps(appointmentItem.geometry.rect)) {
         return value + 1;
       }
+
       return value;
     });
     appointmentItem.geometry.spreadCount = spreadCount;
@@ -391,40 +408,16 @@ class AppointmentRenderService {
 
   List<Widget> renderAppointments(List<AppointmentItem> visibleItems) {
     List<Widget> result = [];
+    int index = 0;
     for (AppointmentItem appointmentItem in visibleItems) {
-      //var key = GlobalKey();
-      result.add(AppointmentWidget(appointmentItem, this, timeOrientation));
+      //var key = GlobalKey(); //-- adding a key causes the appointments to re-animate
+      result.add(AppointmentWidget(index, appointmentItem, this, timeOrientation));
+      index++;
     }
+    //result.add(const SizingFeedbackContainer());
+
     return result;
   }
-
-  /*List<SizingGroup> getSizingGroups(List<Appointment> appointments, DateTime date) {
-    bool newGroup = true;
-    List<TimeSlot> timeSlots = this.timeSlots.where((ts) => ts.startDate.isSameDay(date)).toList();
-    List<SizingGroup> groups = [];
-    for (TimeSlot timeSlot in timeSlots) {
-      List<Appointment> apptsInRange = appointments.where((a) => timeSlot.startDate.isBetween(a.startDate, a.endDate) ||
-          timeSlot.endDate.isBetween(a.startDate, a.endDate) ).toList();
-
-      if (apptsInRange.isEmpty) {
-        newGroup = true;
-        continue;
-      }
-      if (groups.isNotEmpty) {
-        newGroup = !groups.last.appointments.containsAll(apptsInRange);
-            //groups.last.appointments.where((g) => apptsInRange.contains(g)).length != apptsInRange.length;
-      }
-      if (newGroup) {
-        newGroup = false;
-        groups.add(SizingGroup(apptsInRange.length, apptsInRange));
-      } else {
-        var group = groups.last;
-        group.maxSpread = max(apptsInRange.length, group.maxSpread);
-        group.appointments.addAll(apptsInRange.where((a) => !group.appointments.contains(a)));
-      }
-    }
-    return groups;
-  }*/
 
 }
 
@@ -432,12 +425,7 @@ class SpreadManager {
   Spread? findSpread(Appointment appt){
     return spreads.firstWhereOrNull((s) => s.appointment == appt);
   }
-  addSpread(Appointment appt1, Appointment appt2){
-    if (spreadExists(appt1, appt2)) {
-      // var spread = Spread();
-       //spread.spreadAppts.
-    }
-  }
+
   bool spreadExists(Appointment appt1, Appointment appt2) {
      return spreads.firstWhereOrNull((s) => s.spreadAppts.contains(appt1) && s.spreadAppts.contains(appt2)) != null;
   }
@@ -448,8 +436,8 @@ class SpreadManager {
 
   int getSpreadCount(Appointment appt){
      var apptSpreads = spreads.where((s) => s.spreadAppts.contains(appt));
-     return apptSpreads.fold(0,(count, spread) {
-       //return spread.count + count;
+
+     return apptSpreads.fold(0, (count, spread) {
        return max(spread.count, count);
      });
   }
