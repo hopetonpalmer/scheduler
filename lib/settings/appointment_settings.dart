@@ -4,7 +4,7 @@ class AppointmentSettings {
   final Color? hoverBorderColor;
   final Color defaultColor;
   final Color fontColor;
-  final bool fontColorShadeOfBack;
+  final bool fontColorLuminanceAware;
   final TextStyle? textStyle;
   final double spaceBetween;
   final Radius? cornerRadius;
@@ -18,16 +18,16 @@ class AppointmentSettings {
   const AppointmentSettings({
     this.defaultColor = Colors.grey,
     this.fontColor = Colors.white,
-    this.fontColorShadeOfBack = false,
+    this.fontColorLuminanceAware = true,
     this.selectionBorderColor, // = Colors.blue,
     this.hoverBorderColor, // const(0xffff9800),
     this.textStyle,
-    this.spaceBetween = 1.50,
+    this.spaceBetween = 0.75,
     this.cornerRadius,
     this.builder,
     this.hapticFeedbackOnLongPressSelection = true,
     this.selectionDelay = kLongPressTimeout,
-    this.dragDelay = kLongPressTimeout,
+    this.dragDelay =  kLongPressTimeout,
     this.animationDuration = const Duration(seconds: 1),
   });
 

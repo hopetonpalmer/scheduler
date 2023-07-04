@@ -90,6 +90,10 @@ extension DateExtension on DateTime {
     return this >= start && this <= end;
   }
 
+  bool isInside(DateTime start, DateTime end) {
+    return this > start && this < end;
+  }
+
   bool isBetweenDay(DateTime start, DateTime end){
     return startOfDay >= start.startOfDay && this <= end.startOfDay;
   }
@@ -105,17 +109,17 @@ extension DateExtension on DateTime {
        return this;
      }
      if (minuteInterval == 0) {
-        return before ? startOfHour : incMinutes(60-minute);
+        return before ? startOfHour : addMinutes(60-minute);
      }
      List<DateTime> dates = [];
      DateTime date = startOfHour;
      while (date.isSameHour(startOfHour)){
        dates.add(date);
-       date = date.incMinutes(minuteInterval);
+       date = date.addMinutes(minuteInterval);
      }
      DateTime result = closestTo(dates)!;
      if (before && result.isAfter(this)) {
-       result = result.incMinutes(-minuteInterval);
+       result = result.addMinutes(-minuteInterval);
      }
 
      return result;

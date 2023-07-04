@@ -19,14 +19,21 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
     schedulerSettings = Scheduler.of(context).schedulerSettings;
     settings = Scheduler.of(context).monthViewSettings;
     // ColorScheme colorScheme = Theme.of(context).extension<MonthViewTheme>()?.colorScheme ?? Theme.of(context).colorScheme;
-    Color? backgroundColor = Theme.of(context).extension<MonthViewTheme>()?.backgroundColor ?? schedulerSettings.backgroundColor;
-    return SchedulerView(viewBuilder: buildMonthView, backgroundColor: backgroundColor);
+    Color? backgroundColor =
+        Theme.of(context).extension<MonthViewTheme>()?.backgroundColor ??
+            schedulerSettings.backgroundColor;
+
+    return SchedulerView(
+      viewBuilder: buildMonthView,
+      backgroundColor: backgroundColor,
+    );
   }
 
   Widget buildMonthView(BuildContext context, BoxConstraints constraints) {
     weekNumberWidth = settings.showWeekNumber ? settings.weekNumberWidth : 0;
     daysWidth = constraints.maxWidth - weekNumberWidth;
     dayWidth = daysWidth / DateTime.daysPerWeek;
+
     return Column(children: [buildMonthHeader(context), buildWeeks()]);
   }
 
@@ -40,19 +47,23 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
       headers.add(
         Expanded(
           child: DateHeader(
-              headerType: DateHeaderType.day,
-              date: date,
-              fontSize: 14,
-              textAlign: TextAlign.center,
-              padding: const EdgeInsets.all(10.0),
-              dateFormat: settings.calcHeaderFormat(MediaQuery.of(context).size.width)),
+            headerType: DateHeaderType.day,
+            date: date,
+            fontSize: 14,
+            textAlign: TextAlign.center,
+            padding: const EdgeInsets.all(10.0),
+            dateFormat:
+                settings.calcHeaderFormat(MediaQuery.of(context).size.width),
+          ),
         ),
       );
     }
+
     return Container(
-        width: daysWidth + weekNumberWidth,
-        color: schedulerSettings.headerBackgroundColor,
-        child: Row(children: headers));
+      width: daysWidth + weekNumberWidth,
+      color: schedulerSettings.headerBackgroundColor,
+      child: Row(children: headers),
+    );
   }
 
   Widget buildWeeks() {
@@ -67,6 +78,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
         break;
       }
     }
+
     return Expanded(child: Column(children: weeks));
   }
 
@@ -77,6 +89,7 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
       if (date.month == currentMonth) {
         return Colors.transparent;
       }
+
       return date.month < currentMonth
           ? settings.leadingDaysBackgroundColor
           : settings.trailingDaysBackgroundColor;
@@ -91,11 +104,18 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
         days.add(buildWeekNumber(date));
       }
       GlobalKey key = GlobalKey();
-      TimeSlot timeSlot = TimeSlot(date,endDate,CalendarViewType.month,IntervalType.day, dayWidth);
+      TimeSlot timeSlot = TimeSlot(
+        date,
+        endDate,
+        CalendarViewType.month,
+        IntervalType.day,
+        dayWidth,
+      );
       days.add(
         Expanded(
           child: TimeslotCell(
-            builder: (context, isSelected) => buildDayCell(date, currentMonth, isSelected, isDisabled),
+            builder: (context, isSelected) =>
+                buildDayCell(date, currentMonth, isSelected, isDisabled),
             timeSlot: timeSlot,
             showDivider: false,
             showBorders: true,
@@ -110,51 +130,62 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
         ),
       );
     }
+
     return Expanded(child: Row(children: days));
   }
 
   Widget buildDayCell(
-      DateTime date, int currentMonth, bool isSelected, bool disabled) {
+    DateTime date,
+    int currentMonth,
+    bool isSelected,
+    bool disabled,
+  ) {
     bool isLongDate = date == startDate || date.isFirstDayOfMonth;
 
     Color? fontColor(DateTime date) {
       if (date.month == currentMonth) {
         return null; //Colors.black;
       }
-      return date.month < currentMonth
-          ? settings.leadingDaysTextStyle != null ? settings.leadingDaysTextStyle!.color : null
-          : settings.trailingDaysTextStyle != null ? settings.trailingDaysTextStyle!.color : null;
-    }
 
+      return date.month < currentMonth
+          ? settings.leadingDaysTextStyle != null
+              ? settings.leadingDaysTextStyle!.color
+              : null
+          : settings.trailingDaysTextStyle != null
+              ? settings.trailingDaysTextStyle!.color
+              : null;
+    }
 
     String monthDateFormat() {
       String result = 'd';
-      if (isLongDate){
+      if (isLongDate) {
         result = 'MMM d';
         if (MediaQuery.of(context).size.width <= kSmallDevice) {
           result = 'Md';
         }
       }
+
       return result;
     }
 
     return Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
       DateHeader(
-          height: isLongDate ? null : 40,
-          width: isLongDate ? 80 : 40,
-          isSelected: isSelected,
-          backgroundColor: Colors.transparent,
-          headerType: DateHeaderType.day,
-          circleWhenNow: true,
-          isLongText: isLongDate,
-          date: date,
-          fontSize: 14,
-          dateVisible: !disabled,
-          fontColor: fontColor(date),
-          textAlign: TextAlign.center,
-          padding: const EdgeInsets.all(5.0),
-          dateFormat: monthDateFormat()),
-      Expanded(child: Container())
+        height: isLongDate ? null : 40,
+        width: isLongDate ? 80 : 40,
+        isSelected: isSelected,
+        backgroundColor: Colors.transparent,
+        headerType: DateHeaderType.day,
+        circleWhenNow: true,
+        isLongText: isLongDate,
+        date: date,
+        fontSize: 14,
+        dateVisible: !disabled,
+        fontColor: fontColor(date),
+        textAlign: TextAlign.center,
+        padding: const EdgeInsets.all(5.0),
+        dateFormat: monthDateFormat(),
+      ),
+      Container(),
     ]);
   }
 
@@ -163,20 +194,22 @@ class _MonthViewState extends State<MonthView> with IntervalConfig {
     String caption = settings.rotateWeekNumber
         ? '${settings.weekNumberCaption} $weekNumber'
         : weekNumber;
+
     return Container(
       padding: const EdgeInsets.only(top: 5, bottom: 5),
-      child: RotatedBox(
-        quarterTurns: settings.rotateWeekNumber ? 3 : 0,
-        child: Center(
-          child: FittedBox(child: Text(caption)),
-        ),
-      ),
       width: weekNumberWidth,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-              color: schedulerSettings.getIntervalLineColor(context),
-              width: schedulerSettings.dividerLineWidth),
+            color: schedulerSettings.getIntervalLineColor(context),
+            width: schedulerSettings.dividerLineWidth,
+          ),
+        ),
+      ),
+      child: RotatedBox(
+        quarterTurns: settings.rotateWeekNumber ? 3 : 0,
+        child: Center(
+          child: FittedBox(child: Text(caption)),
         ),
       ),
     );

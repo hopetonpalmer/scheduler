@@ -8,6 +8,7 @@ class SchedulerService {
     if (scheduler != null){
       instance._scheduler = scheduler;
     }
+
     return instance;
   }
   SchedulerService._internal();

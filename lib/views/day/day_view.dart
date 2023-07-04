@@ -14,11 +14,9 @@ class DayView extends StatefulWidget {
 class _DayViewState extends State<DayView> with IntervalConfig {
   late SchedulerSettings schedulerSettings;
   late DayViewSettings dayViewSettings;
-  //late ScrollController scrollController;
 
   @override
   void initState() {
-    //scrollController = ScrollController();
     intervalMinute = SchedulerService().dayViewSettings.intervalMinute;
     schedulerSettings = SchedulerService().schedulerSettings; // Scheduler.of(context).schedulerSettings;
     dayViewSettings = SchedulerService().dayViewSettings; // Scheduler.of(context).dayViewSettings;
@@ -27,7 +25,6 @@ class _DayViewState extends State<DayView> with IntervalConfig {
 
   @override
   void dispose() {
-    //scrollController.dispose();
     super.dispose();
   }
 
@@ -35,43 +32,12 @@ class _DayViewState extends State<DayView> with IntervalConfig {
   Widget build(BuildContext context) {
     return Material(
       child: SchedulerView(
-        viewBuilder: (BuildContext context, BoxConstraints constraints) => buildVirtualView(constraints)
+        viewBuilder: (BuildContext context, BoxConstraints constraints) => buildView(constraints),
       ),
     );
   }
 
   Widget buildView(BoxConstraints constraints) {
-       return Column(
-            children: [
-              Container(
-                color: schedulerSettings.headerBackgroundColor,
-                child: IntrinsicHeight(
-                  child: Row(
-                    children: buildDayHeaders(
-                      startDate,
-                      constraints.maxWidth,
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) =>
-                      Container(
-                        color: schedulerSettings.backgroundColor,
-                        child: DayViewBody(
-                          date: startDate,
-                          days: widget.days,
-                          constraints: constraints,
-                        ),
-                      ),
-                ),
-              ),
-            ],
-          );
-  }
-
-  Widget buildVirtualView(BoxConstraints constraints) {
     return VirtualPageView(
       initialDate: startDate,
       itemBuilder: (BuildContext context, pageDate,_) =>
@@ -91,9 +57,34 @@ class _DayViewState extends State<DayView> with IntervalConfig {
               Expanded(
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
+                    double height = constraints.maxHeight;
+                    int interval = schedulerService.dayViewSettings.intervalMinute.value;
+                    int slotsPerHour = 60 ~/ interval;
+                    int intervalCount = slotsPerHour * 24;
+                    double intervalHeight = max(
+                      schedulerService.dayViewSettings.intervalMinHeight,
+                      height / intervalCount,
+                    ).ceilToDouble();
+
+                    return Container (
+                      color: schedulerSettings.backgroundColor,
+                      child: EventGrid(
+                        date: pageDate,
+                        days: widget.days,
+                        constraints: constraints,
+                        intervalHeight: intervalHeight,
+                        intervalWidth: 0,
+                        showCurrentTimeIndicator: true,
+                        orientation: Axis.vertical,
+                        intervalType: IntervalType.minute,
+                        headerThickness: dayViewSettings.timebarFullWidth,
+                        calendarViewType: CalendarViewType.day,
+                     ),
+                    );
+
                     return Container(
                         color: schedulerSettings.backgroundColor,
-                        child: DayViewBody(
+                        child: DayEventGrid(
                           key: GlobalKey(),
                           date: pageDate,
                           days: widget.days,
@@ -101,7 +92,7 @@ class _DayViewState extends State<DayView> with IntervalConfig {
                           constraints: constraints,
                         ),
                       );
-                     }
+                     },
                 ),
               ),
             ],
@@ -171,7 +162,7 @@ class _DayViewState extends State<DayView> with IntervalConfig {
                 date: date,
                 width: dayWidth,
                 height: 20,
-                showDivider: true),
+                showDivider: true,),
         /*    DateHeader(
                 //not really an allday header; spacer to give the first time (12 AM) in the ruler a margin at the top
                 headerType: DateHeaderType.allDay,

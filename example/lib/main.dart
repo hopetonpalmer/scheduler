@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
         // home: SafeArea(child: jzDayView())
         // home: SafeArea(child: jzWeekView())
         //  home: SafeArea(child: Scheduler(view: TimelineView(pages: 5, calendarType: CalendarType.month, intervalMinute: IntervalMinute.min15)))
-        home: SafeArea(child: JzScheduler(dataSource: getDataSource(), viewType: CalendarViewType.day,
+        home: SafeArea(child: JzScheduler(dataSource: getDataSource(), viewType: CalendarViewType.week,
              schedulerSettings: const SchedulerSettings(
  //           locale: 'Ja_Jp'
 /*            headerBackgroundColor: Colors.white,
@@ -72,10 +72,25 @@ class _MyAppState extends State<MyApp> {
     DateTime today = DateTime.now().startOfDay.addHours(9);
     result.addAppointment(today, const Duration(minutes: 120), "Morning meeting with India", color: ColorsExt.random);
     result.addAppointment(today.addDays(1), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
+    result.addAppointment(today.addDays(2), const Duration(minutes: 220), "Breakfast 2", color: ColorsExt.random);
+    result.addAppointment(today.addHours(4), const Duration(minutes: 220), "Workout", color: ColorsExt.random);
+    result.addAppointment(today, const Duration(minutes: 80), "test red", color: ColorsExt.random);
+    result.addAppointment(today, const Duration(minutes: 180), "test blue", color: ColorsExt.random);
+
+/*    result.addAppointment(today, const Duration(minutes: 120), "Morning meeting with India", color: ColorsExt.random);
+    result.addAppointment(today.addDays(1), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
     result.addAppointment(today.addDays(2), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
     result.addAppointment(today.addHours(4), const Duration(minutes: 220), "Workout", color: ColorsExt.random);
     result.addAppointment(today, const Duration(minutes: 80), "test red", color: ColorsExt.random);
     result.addAppointment(today, const Duration(minutes: 180), "test blue", color: ColorsExt.random);
+
+    result.addAppointment(today, const Duration(minutes: 120), "Morning meeting with India", color: ColorsExt.random);
+    result.addAppointment(today.addDays(1), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
+    result.addAppointment(today.addDays(2), const Duration(minutes: 220), "Breakfast", color: ColorsExt.random);
+    result.addAppointment(today.addHours(4), const Duration(minutes: 220), "Workout", color: ColorsExt.random);
+    result.addAppointment(today, const Duration(minutes: 80), "test red", color: ColorsExt.random);
+    result.addAppointment(today, const Duration(minutes: 180), "test blue", color: ColorsExt.random);*/
+
     result.addAppointment(DateTime(year,month,14,3,0), const Duration(minutes: 120), "test 1", color: ColorsExt.random);
     result.addAppointment(DateTime(year,month,14,2,45), const Duration(minutes: 180), "test 5", color: ColorsExt.random);
     result.addAppointment(DateTime(year,month,14,5,15), const Duration(minutes: 80), "test 10", color: ColorsExt.random);

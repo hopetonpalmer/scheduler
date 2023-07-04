@@ -6,7 +6,7 @@ import 'package:scheduler/services/appointment_drag_service.dart';
 import 'package:scheduler/services/appointment_service.dart';
 
 typedef SchedulerViewBuilder = Widget Function(
-    BuildContext context, BoxConstraints constraints);
+    BuildContext context, BoxConstraints constraints,);
 
 class SchedulerView extends StatefulWidget {
   final SchedulerViewBuilder viewBuilder;
@@ -22,6 +22,7 @@ class _SchedulerViewState extends State<SchedulerView> {
   Widget build(BuildContext context) {
     SchedulerSettings schedulerSettings = Scheduler.of(context).schedulerSettings;
     Intl.defaultLocale = schedulerSettings.locale;
+
     return Material(
       child: RawKeyboardListener(
         autofocus: true,

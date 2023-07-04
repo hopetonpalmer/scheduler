@@ -40,7 +40,7 @@ class _AppointmentDraggerState extends State<AppointmentDragger> {
       },
       child: LongPressDraggableEx<Appointment>(
         allowDragGesture: () => false,
-        delay: const Duration(), // settings.dragDelay,
+        delay: const Duration(), // scheduler.appointmentSettings.dragDelay,
         onDragStarted: () {
           AppointmentDragService().beginDrag(widget.appointmentItem.appointment);
         },

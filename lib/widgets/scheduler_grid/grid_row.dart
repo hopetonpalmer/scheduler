@@ -21,9 +21,18 @@ class GridRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [for (int i = 0; i < rulerCells.length; i++) rulerCells[i],
-        ...[for (int i = 0; i < cellCount; i++) GridCell(size: cellSize,
-            rowIndex: rowIndex, colIndex: i, intervalBlockSize: intervalBlockSize,)]],
+      children: [
+        for (int i = 0; i < rulerCells.length; i++) rulerCells[i],
+        ...[
+          for (int i = 0; i < cellCount; i++)
+            GridCell(
+              size: cellSize,
+              rowIndex: rowIndex,
+              colIndex: i,
+              intervalBlockSize: intervalBlockSize,
+            ),
+        ],
+      ],
     );
   }
 }

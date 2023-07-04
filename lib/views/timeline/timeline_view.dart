@@ -29,7 +29,7 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
   late double intervalWidth;
   late int intervalsPerPage;
   late double width;
-  late int groupsPerPage;
+  late int intervalGroupsPerPage;
 
   @override
   void initState() {
@@ -66,28 +66,28 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
 
     Rect calendarRect = Rect.fromLTWH(0, 0, width, height);
     double dayWidth = width / widget.pages;
-    double pixelsPerMinute =
-        dayWidth / scheduler.schedulerSettings.dayDuration.inMinutes;
+    double pixelsPerMinute = dayWidth / scheduler.schedulerSettings.dayDuration.inMinutes;
     var timeSlotSample = TimeSlot(
         startDate,
         startDate.incMinutes(intervalMinute!.value),
         CalendarViewType.day,
         IntervalType.minute,
-        intervalWidth);
+        intervalWidth,);
 
     appointmentRenderService = AppointmentRenderService(pixelsPerMinute,
         AnchorPosition.left, timeSlotSample, calendarRect, dayWidth, startDate,
-        fixedSize: true);
+        fixedSize: true,);
 
     List<Widget>? renderAppointments() {
       dataSource.visibleDateRange.setRange(startDate, endDate);
       var visibleItems = dataSource.visibleAppointmentItems;
       for (int i = 0; i < widget.pages; i++) {
         DateTime date = startDate.incDays(i);
-        Rect dayRect = Rect.fromLTWH(dayWidth * i, 100, width, height);
+        Rect dayRect = Rect.fromLTWH(dayWidth * i, 118, width, height);
         appointmentRenderService?.measureAppointments(
-            DateRange(date, date), dayRect, visibleItems);
+            DateRange(date, date), dayRect, visibleItems,);
       }
+
       return appointmentRenderService?.renderAppointments(visibleItems);
     }
 
@@ -135,14 +135,12 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
     DateTime groupDate = date.startOfDay;
 
     intervalsPerPage = getIntervalsPerPage(date);
-    intervalWidth = max(widget.minIntervalWidth, maxWidth / intervalsPerPage)
-        .ceilToDouble();
-    width = (intervalsPerPage * intervalWidth).ceilToDouble() +
-        schedulerSettings.dividerLineWidth;
-    groupsPerPage = getGroupsPerPage(date);
+    intervalWidth = max(widget.minIntervalWidth, maxWidth / intervalsPerPage).ceilToDouble();
+    width = (intervalsPerPage * intervalWidth).ceilToDouble() + schedulerSettings.dividerLineWidth;
+    intervalGroupsPerPage = getGroupsPerPage(date);
 
     List<Widget> groupCells = [];
-    for (int i = 0; i < groupsPerPage; i++) {
+    for (int i = 0; i < intervalGroupsPerPage; i++) {
       groupCells.add(buildIntervalGroupCells(
         i,
         intervalWidth,
@@ -230,7 +228,7 @@ class _TimelineViewState extends State<TimelineView> with IntervalConfig {
   }
 
   Widget buildIntervalGroupCells(int intervalIndex, double intervalWidth,
-      DateTime groupDate, bool showDivider) {
+      DateTime groupDate, bool showDivider,) {
     showDivider = showTimeBlockDivider(showDivider, groupDate);
     List<Widget> intervalCells = [];
     for (int i = 0; i < getTimeBlockSize(); i++) {

@@ -34,6 +34,7 @@ class MonthViewSettings with Diagnosticable {
     } else if (clientWidth <= kMediumDevice) {
       return "EEE";
     }
+
     return headerDayNameFormat;
   }
 }

@@ -84,31 +84,40 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     longPressTimer = null;
   }
 
+  get isFirstInSeries {
+    return appointment.appointmentItemsByDay.length > 1 && appointment.appointmentItemsByDay.first == widget.appointmentItem;
+  }
+
+  get isLastInSeries {
+    return appointment.appointmentItemsByDay.length > 1 && appointment.appointmentItemsByDay.last == widget.appointmentItem;
+  }
+
   BorderRadius borderRadius(Radius? cornerRadius) {
     Radius borderRadius = cornerRadius ?? const Radius.circular(4);
-    if (appointment.appointmentItems.length == 1) {
+    //if (appointment.appointmentItemsByDay.length == 1) {
+
       return BorderRadius.all(borderRadius);
-    }
+    //}
     Radius topLeft = borderRadius;
     Radius topRight = borderRadius;
     Radius bottomLeft = borderRadius;
     Radius bottomRight = borderRadius;
 
     if (widget.orientation == FlowOrientation.vertical) {
-      if (widget.appointmentItem != appointment.appointmentItems.last) {
+      if (widget.appointmentItem != appointment.appointmentItemsByDay.last) {
         bottomLeft = const Radius.circular(0);
         bottomRight = const Radius.circular(0);
       }
-      if (widget.appointmentItem != appointment.appointmentItems.first) {
+      if (widget.appointmentItem != appointment.appointmentItemsByDay.first) {
         topLeft = const Radius.circular(0);
         topRight = const Radius.circular(0);
       }
     } else {
-      if (widget.appointmentItem != appointment.appointmentItems.last) {
+      if (widget.appointmentItem != appointment.appointmentItemsByDay.last) {
         topRight = const Radius.circular(0);
         bottomRight = const Radius.circular(0);
       }
-      if (widget.appointmentItem != appointment.appointmentItems.first) {
+      if (widget.appointmentItem != appointment.appointmentItemsByDay.first) {
         topLeft = const Radius.circular(0);
         bottomLeft = const Radius.circular(0);
       }
@@ -122,6 +131,21 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     );
   }
 
+  BorderSide openBorder(bool isDragging) {
+    double width = 1;
+    Color color = appointment.color.darken(.25);
+    if (!isDragging) {
+      if (isSelected) {
+        width = 1.5;
+        color = settings.getSelectionBorderColor(context);
+      } else if (isHovered) {
+        color = settings.getHoverBorderColor(context);
+      }
+    }
+
+    return BorderSide(width: width, color: color);
+  }
+
   Border border(bool isDragging){
     double width = 1;
     Color color = appointment.color.darken(.25);
@@ -133,8 +157,76 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
         color = settings.getHoverBorderColor(context);
       }
     }
+    //if (appointment.appointmentItemsByDay.length == 1) {
 
-    return Border.all(width: width, color: color);
+      return Border.all(width: width, color: color);
+   // }
+
+    BorderSide topSide = BorderSide(width: width, color: color);
+    BorderSide rightSide = BorderSide(width: width, color: color);
+    BorderSide bottomSide = BorderSide(width: width, color: color);
+    BorderSide leftSide = BorderSide(width: width, color: color);
+
+    BorderSide openSide = BorderSide(width: width, color: appointment.color);
+
+    if (widget.orientation == FlowOrientation.vertical) {
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.last) {
+        topSide = openSide;
+      }
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.first) {
+        bottomSide = openSide;
+      }
+    } else {
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.last) {
+        leftSide = openSide;
+      }
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.first) {
+        rightSide = openSide;
+      }
+    }
+
+    return Border(
+      top: topSide,
+      right: rightSide,
+      bottom: bottomSide,
+      left: leftSide,
+    );
+  }
+
+  List<BorderSide> getOpenBorder(bool isDragging){
+    double width = 1;
+    Color color = appointment.color.darken(.25);
+    List<BorderSide> result = [BorderSide.none, BorderSide.none, BorderSide.none, BorderSide.none];
+    if(!isDragging){
+      if (isSelected) {
+        width = 1.5;
+        color = settings.getSelectionBorderColor(context);
+      } else if (isHovered) {
+        color = settings.getHoverBorderColor(context);
+      }
+    }
+    if (appointment.appointmentItemsByDay.length == 1) {
+       return result;
+    }
+    BorderSide openSide = BorderSide(width: width, color: appointment.color);
+
+    if (widget.orientation == FlowOrientation.vertical) {
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.last) {
+        result[0] = openSide;
+      }
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.first) {
+        result[2] = openSide;
+      }
+    } else {
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.last) {
+        result[3] = openSide;
+      }
+      if (widget.appointmentItem == appointment.appointmentItemsByDay.first) {
+        result[1] = openSide;
+      }
+    }
+
+    return result;
   }
 
   selectAppointment() {
@@ -149,49 +241,59 @@ class _AppointmentWidgetState extends State<AppointmentWidget> with TickerProvid
     slotSelector = scheduler.slotSelector;
     Color color = widget.appointmentItem.appointment.color;
     double height = rect.height;
-    double width = rect.width;
-    Color textColor = settings.fontColorShadeOfBack ? color.darken(0.45) : settings.fontColor;
+    double width = rect.width == double.infinity ? 0 : max(0, rect.width);
+    Color textColor = settings.fontColorLuminanceAware ?
+    color.computeLuminance() > 0.5 ? Colors.black : Colors.white : settings.fontColor;
 
 
     Widget appointmentViewBody(double opacity, bool dragging) {
-      return Container(
-          padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2, right: 4),
-          decoration: widget.decoration ??
-              BoxDecoration(
-                color: color.withOpacity(opacity),
-                border: border(dragging),
-                borderRadius: borderRadius(settings.cornerRadius),
-              ),
-          height: max(0, height),
-          width: width == double.infinity ? 0 : max(0, width),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FittedBox(
-                child: Text(widget.appointmentItem.appointment.subject,
-                    style: widget.textStyle ??
-                        TextStyle(
-                            color: textColor,
-                            fontSize: height >= minResponsiveHeight ? 12.0 : min(12,height * .40),
-                            overflow: TextOverflow.ellipsis,),),
-              ),
-              Visibility(
-                visible: height > minResponsiveHeight,
-                child: ClipRect(
-                  child: FittedBox(
-                    child: Text(
-                        '${DateFormat('h:mm a').format(widget.appointmentItem.appointment.startDate)} - ${DateFormat('h:mm a')
-                                .format(widget.appointmentItem.appointment.endDate)}',
-                        style: widget.textStyle ??
-                            TextStyle(
-                                color: textColor,
-                                fontSize: 12.0,
-                                overflow: TextOverflow.ellipsis,),),
+      return OpenBorder(
+        isActive: !dragging,
+        isFirst: isFirstInSeries,
+        isLast: isLastInSeries,
+        orientation: widget.orientation == FlowOrientation.vertical ? Axis.vertical : Axis.horizontal,
+        border: openBorder(dragging),
+        color: color.withOpacity(opacity),
+        size: Size(width, height),
+        child: Container(
+            padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2, right: 4),
+            decoration: widget.decoration ??
+                BoxDecoration(
+                  color: color.withOpacity(opacity),
+                  border: border(dragging),
+                  borderRadius: borderRadius(settings.cornerRadius),
+                ),
+            height: max(0, height),
+            width: width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  child: Text(widget.appointmentItem.appointment.subject,
+                      style: widget.textStyle ??
+                          TextStyle(
+                              color: textColor,
+                              fontSize: height >= minResponsiveHeight ? 12.0 : min(12,height * .40),
+                              overflow: TextOverflow.ellipsis,),),
+                ),
+                Visibility(
+                  visible: height > minResponsiveHeight,
+                  child: ClipRect(
+                    child: FittedBox(
+                      child: Text(
+                          '${DateFormat('h:mm a').format(widget.appointmentItem.appointment.startDate)} - ${DateFormat('h:mm a')
+                                  .format(widget.appointmentItem.appointment.endDate)}',
+                          style: widget.textStyle ??
+                              TextStyle(
+                                  color: textColor,
+                                  fontSize: 12.0,
+                                  overflow: TextOverflow.ellipsis,),),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),);
+              ],
+            ),),
+      );
     }
 
     Widget appointmentView({double opacity = 1, bool dragging = false}) {

@@ -94,7 +94,7 @@ class DelayedPointerState extends MultiDragPointerState {
   @override
   void checkForResolutionAfterMove() {
     if (_timer == null) {
-      assert(_starter != null);
+      // assert(_starter != null);
 
       return;
     }

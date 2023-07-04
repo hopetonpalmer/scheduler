@@ -14,16 +14,20 @@ class Appointment {
 
   String subject;
   Color color;
+  bool isAllDay;
   final List<AppointmentItem> appointmentItems = [];
   final List<AppointmentItem> appointmentItemsByDay = [];
   final List<AppointmentItem> appointmentItemsByWeek = [];
   final List<AppointmentItem> appointmentItemsByMonth = [];
-  AppointmentGeometry geometry = AppointmentGeometry();
+
   Appointment(
     DateTime startDate,
     DateTime endDate,
     this.subject,
-    {this.color = Colors.grey, }
+    {
+      this.color = Colors.grey,
+      this.isAllDay = false,
+    }
   ){
     setDates(startDate, endDate);
   }

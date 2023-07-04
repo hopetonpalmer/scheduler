@@ -38,10 +38,13 @@ class AppointmentService with ChangeNotifier {
     int dayCount = start.getDifferenceInCalendarDays(end);
     for (int i = 0; i <= dayCount; i++) {
       end = start.isSameDay(end) ? end : start.getEndOfDay();
-      result.add(AppointmentItem(appointment, start, end));
+      if (end.diffInDuration(start) != Duration.zero) {
+        result.add(AppointmentItem(appointment, start, end));
+      }
       start = start.incDays(1).startOfDay;
       end = appointment.endDate;
     }
+
     return result;
   }
 
@@ -70,12 +73,13 @@ class AppointmentService with ChangeNotifier {
       start = start.incMonths(1).startOfDay;
       end = appointment.endDate;
     }
+
     return result;
   }
 
   List<AppointmentItem> getSingleAppointmentItems(Appointment appointment) {
     return [
-      AppointmentItem(appointment, appointment.startDate, appointment.endDate)
+      AppointmentItem(appointment, appointment.startDate, appointment.endDate),
     ];
   }
 

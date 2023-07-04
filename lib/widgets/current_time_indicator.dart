@@ -30,7 +30,7 @@ class CurrentTimeIndicator extends StatelessWidget {
     return minutes * tick;
   }
 
-  double get dottedlineLength {
+  double get dottedLineLength {
     return max(0, activePos - startPos);
   }
 
@@ -56,9 +56,9 @@ class CurrentTimeIndicator extends StatelessWidget {
             width: max(0, activeLength + activePos - startPos),
             child: Row(
               children: [
-                if (dottedlineLength > 0)
+                if (dottedLineLength > 0)
                   DottedLine(
-                    width: dottedlineLength,
+                    width: dottedLineLength,
                     color: indicatorColor.withOpacity(lineAlpha),
                     isVerticalFlow: true,
                   ),
@@ -72,7 +72,7 @@ class CurrentTimeIndicator extends StatelessWidget {
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: indicatorColor),
+                      shape: BoxShape.circle, color: indicatorColor,),
                 ),
                 Expanded(child: Container(height: .75, color: indicatorColor)),
               ],

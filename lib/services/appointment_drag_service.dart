@@ -30,11 +30,7 @@ class AppointmentDragService{
 
   prepareDragSize(SizingDirection dragSizeDirection) {
      _dragSizeDirection = dragSizeDirection;
-     if (_dragSizeDirection == SizingDirection.none) {
-       dragModeNotifier.value = DragMode.drag;
-     } else {
-       dragModeNotifier.value = DragMode.size;
-     }
+     dragModeNotifier.value = _dragSizeDirection == SizingDirection.none ? DragMode.drag : DragMode.size;
   }
 
   Widget? dragSizeFeedbackContainer;

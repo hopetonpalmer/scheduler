@@ -8,4 +8,13 @@ class UIService {
   BuildContext? topMostContext;
   Widget? topMostContainer;
   final ValueNotifier<Widget?> topMostNotifier = ValueNotifier<Widget?>(null);
+
+  Rect getBounds(BuildContext context) {
+    RenderObject? renderObject = context.findRenderObject();
+    if (renderObject == null) {
+      return Rect.zero;
+    }
+
+    return renderObject.paintBounds;
+   }
 }

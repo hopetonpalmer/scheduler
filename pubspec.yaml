@@ -4,17 +4,17 @@ description: A new Flutter package project.
 version: 0.0.1
 homepage: null
 environment:
-  sdk: '>=2.17.0'
-  flutter: '>=1.17.0'
+  sdk: '>=3.0.1 <4.0.0'
+
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.17.0
+  intl: ^0.18.1
   uuid: ^3.0.7
   dotted_decoration: ^2.0.0
-  dart_date: ^1.2.1
+  dart_date: ^1.2.2
   list_ext: ^1.0.6
-  responsive_framework: ^1.0.0
+  responsive_framework: ^1.1.0
   another_transformer_page_view: ^2.0.1
   resizable_widget: ^1.0.5
   rxdart:
@@ -23,5 +23,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
-  dart_code_metrics: ^5.7.3
+  dart_code_metrics: ^5.7.5
 flutter: null

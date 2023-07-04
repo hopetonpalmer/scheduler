@@ -40,12 +40,14 @@ class GridCell extends StatelessWidget {
 
   TextStyle getTextStyle() {
     Color? color = schedulerService.schedulerSettings.timebarFontColor;
+
     return textStyle ?? TextStyle(fontSize: 10, color: color);
   }
 
   @override
   Widget build(BuildContext context) {
     CellPainter cellPainter = CellPainter(cell: this, context: context);
+
     return MouseRegion(
       cursor: DraggableCursor(),
       onHover: (event) {
